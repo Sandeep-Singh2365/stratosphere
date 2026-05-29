@@ -31,19 +31,21 @@ export default function CoverageChart({ data, theme, title }: CoverageChartProps
       }`}>
         {title}
       </h3>
-      <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={220}>
+        <BarChart data={data} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
           <XAxis 
             dataKey="name" 
             tick={{ 
-              fontSize: 10, 
+              fontSize: 11, 
               fill: isWire ? '#64748b' : '#78716c' 
             }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis 
-            tick={{ fontSize: 10, fill: isWire ? '#64748b' : '#78716c' }}
+            tick={{ fontSize: 11, fill: isWire ? '#64748b' : '#78716c' }}
+            label={{ value: 'Articles', angle: -90, position: 'insideLeft', 
+              fontSize: 10, fill: isWire ? '#64748b' : '#78716c' }}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -51,6 +53,7 @@ export default function CoverageChart({ data, theme, title }: CoverageChartProps
           <Tooltip
             contentStyle={tooltipStyle}
             cursor={{ fill: isWire ? '#334155' : '#f5f0eb' }}
+            formatter={(value: any) => [value, 'Articles']}
           />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => (

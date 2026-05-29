@@ -49,16 +49,20 @@ export default async function ArticlePage({
       {/* Badges */}
       <div className="flex flex-wrap gap-2 mb-4">
         {article.regions.map(r => (
-          <Badge key={r.id} variant="outline"
-            className="text-xs border-blue-500 text-blue-400">
-            {r.name}
-          </Badge>
+          <Link key={r.id} href={`/wire/region/${r.slug}`}>
+            <Badge variant="outline"
+              className="text-xs border-blue-500 text-blue-400 hover:bg-blue-950 transition-colors">
+              {r.name}
+            </Badge>
+          </Link>
         ))}
         {article.topics.map(t => (
-          <Badge key={t.id} variant="outline"
-            className="text-xs border-purple-500 text-purple-400">
-            {t.name}
-          </Badge>
+          <Link key={t.id} href={`/wire/topic/${t.slug}`}>
+            <Badge variant="outline"
+              className="text-xs border-purple-500 text-purple-400 hover:bg-purple-950 transition-colors">
+              {t.name}
+            </Badge>
+          </Link>
         ))}
       </div>
 

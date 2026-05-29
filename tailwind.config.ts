@@ -67,8 +67,8 @@ const config: Config = {
       },
       keyframes: {
         ticker: {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(-100%)" },
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         },
         "accordion-down": {
           from: { height: "0" },
@@ -80,7 +80,7 @@ const config: Config = {
         },
       },
       animation: {
-        ticker: "ticker 60s linear infinite",
+        ticker: "ticker 90s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

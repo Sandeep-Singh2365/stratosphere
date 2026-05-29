@@ -30,6 +30,11 @@ export default function NewsletterForm({ theme }: NewsletterFormProps) {
           ? 'You are already subscribed!' 
           : 'Subscribed successfully! Welcome.')
         setEmail('')
+        setTimeout(() => {
+          setStatus('idle')
+          setMessage('')
+          setEmail('')
+        }, 3000)
       } else {
         setStatus('error')
         setMessage(data.error ?? 'Subscription failed. Please try again.')
@@ -51,7 +56,7 @@ export default function NewsletterForm({ theme }: NewsletterFormProps) {
           onChange={e => setEmail(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
           placeholder="your@email.com"
-          disabled={status === 'loading' || status === 'success'}
+          disabled={status === 'loading'}
           className={`flex-1 border rounded-lg px-4 py-2 text-sm 
             focus:outline-none ${isWire
               ? 'bg-wire-bg border-wire-border text-wire-text focus:border-wire-accent placeholder:text-wire-muted'
@@ -60,7 +65,7 @@ export default function NewsletterForm({ theme }: NewsletterFormProps) {
         />
         <button
           onClick={handleSubscribe}
-          disabled={status === 'loading' || status === 'success'}
+          disabled={status === 'loading'}
           className={`px-6 py-2 rounded-lg text-sm font-medium 
             transition-colors text-white disabled:opacity-50 ${isWire
               ? 'bg-wire-accent hover:bg-blue-600'

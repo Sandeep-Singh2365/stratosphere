@@ -81,7 +81,7 @@ export default function WorldMap({ theme, section, articleCounts }: WorldMapProp
       const map = L.map(mapRef.current, {
         center: [20, 20],
         zoom: 2,
-        scrollWheelZoom: false,
+        scrollWheelZoom: true,
         zoomControl: true,
         attributionControl: false,
       })

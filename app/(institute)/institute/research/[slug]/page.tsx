@@ -37,16 +37,20 @@ export default async function ResearchPage({
           {typeLabel}
         </Badge>
         {article.regions.map(r => (
-          <Badge key={r.id} variant="outline"
-            className="border-stone-300 text-stone-500 text-xs">
-            {r.name}
-          </Badge>
+          <Link key={r.id} href={`/institute/region/${r.slug}`}>
+            <Badge variant="outline"
+              className="border-stone-300 text-stone-500 hover:bg-stone-100 transition-colors text-xs">
+              {r.name}
+            </Badge>
+          </Link>
         ))}
         {article.topics.map(t => (
-          <Badge key={t.id} variant="outline"
-            className="border-amber-300 text-amber-700 text-xs">
-            {t.name}
-          </Badge>
+          <Link key={t.id} href={`/institute/topic/${t.slug}`}>
+            <Badge variant="outline"
+              className="border-amber-300 text-amber-700 hover:bg-amber-50 transition-colors text-xs">
+              {t.name}
+            </Badge>
+          </Link>
         ))}
       </div>
 
