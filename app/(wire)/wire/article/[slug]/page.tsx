@@ -1,6 +1,7 @@
 import { getArticleBySlug, getArticlesByRegion } from '@/lib/queries'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import ArticleCard from '@/components/wire/ArticleCard'
@@ -33,9 +34,11 @@ export default async function ArticlePage({
     <article className="max-w-3xl mx-auto">
       {/* Cover */}
       {article.cover_image ? (
-        <img
+        <Image
           src={article.cover_image}
           alt={article.title}
+          width={1200}
+          height={400}
           className="w-full h-72 object-cover rounded-xl mb-8"
         />
       ) : (

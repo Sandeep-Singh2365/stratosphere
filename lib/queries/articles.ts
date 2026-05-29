@@ -1,62 +1,79 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sql } from '@/lib/db';
 import { ArticleWithMeta, Region, Topic } from '@/types';
-
-// Private helper functions for fetching regions and topics per article
-async function getArticleRegions(articleId: string): Promise<Region[]> {
-  const result = await sql`
-    SELECT regions.* FROM regions 
-    JOIN article_regions ON article_regions.region_id = regions.id 
-    WHERE article_regions.article_id = ${articleId}
-  `;
-  return result as Region[];
-}
-
-async function getArticleTopics(articleId: string): Promise<Topic[]> {
-  const result = await sql`
-    SELECT topics.* FROM topics 
-    JOIN article_topics ON article_topics.topic_id = topics.id 
-    WHERE article_topics.article_id = ${articleId}
-  `;
-  return result as Topic[];
-}
+import { unstable_cache } from 'next/cache';
 
 async function enrichArticles(articles: any[]): Promise<ArticleWithMeta[]> {
-  const enriched: ArticleWithMeta[] = [];
-  for (const article of articles) {
-    const regions = await getArticleRegions(article.id);
-    const topics = await getArticleTopics(article.id);
-    enriched.push({
-      ...article,
-      regions,
-      topics,
-    });
-  }
-  return enriched;
+  if (articles.length === 0) return []
+  
+  const ids = articles.map(a => a.id)
+  
+  // Batch fetch all regions for all articles in 2 queries instead of 2N
+  const allRegionRows = await sql`
+    SELECT ar.article_id, r.id, r.name, r.slug, r.color
+    FROM article_regions ar
+    JOIN regions r ON r.id = ar.region_id
+    WHERE ar.article_id = ANY(${ids}::uuid[])
+  `
+  const allTopicRows = await sql`
+    SELECT at.article_id, t.id, t.name, t.slug, t.color
+    FROM article_topics at
+    JOIN topics t ON t.id = at.topic_id
+    WHERE at.article_id = ANY(${ids}::uuid[])
+  `
+
+  const regionsByArticle = new Map<string, Region[]>()
+  const topicsByArticle = new Map<string, Topic[]>()
+
+  allRegionRows.forEach((row: any) => {
+    const existing = regionsByArticle.get(row.article_id) ?? []
+    existing.push({ id: row.id, name: row.name, slug: row.slug, color: row.color })
+    regionsByArticle.set(row.article_id, existing)
+  })
+
+  allTopicRows.forEach((row: any) => {
+    const existing = topicsByArticle.get(row.article_id) ?? []
+    existing.push({ id: row.id, name: row.name, slug: row.slug, color: row.color })
+    topicsByArticle.set(row.article_id, existing)
+  })
+
+  return articles.map(article => ({
+    ...article,
+    regions: regionsByArticle.get(article.id) ?? [],
+    topics: topicsByArticle.get(article.id) ?? [],
+  }))
 }
 
-export async function getFeaturedArticles(section: 'wire' | 'institute'): Promise<ArticleWithMeta[]> {
-  const result = await sql`
-    SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
-    FROM articles 
-    LEFT JOIN analysts ON articles.analyst_id = analysts.id 
-    WHERE articles.section = ${section} AND articles.is_featured = true 
-    AND articles.is_published = true 
-    ORDER BY articles.published_at DESC LIMIT 3
-  `;
-  return enrichArticles(result);
-}
+export const getFeaturedArticles = unstable_cache(
+  async (section: 'wire' | 'institute') => {
+    const result = await sql`
+      SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
+      FROM articles 
+      LEFT JOIN analysts ON articles.analyst_id = analysts.id 
+      WHERE articles.section = ${section} AND articles.is_featured = true 
+      AND articles.is_published = true 
+      ORDER BY articles.published_at DESC LIMIT 3
+    `;
+    return enrichArticles(result);
+  },
+  ['featured-articles'],
+  { revalidate: 300, tags: ['articles'] } // 5 min cache
+)
 
-export async function getArticlesBySection(section: 'wire' | 'institute', limit = 20): Promise<ArticleWithMeta[]> {
-  const result = await sql`
-    SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
-    FROM articles 
-    LEFT JOIN analysts ON articles.analyst_id = analysts.id 
-    WHERE articles.section = ${section} AND articles.is_published = true 
-    ORDER BY articles.published_at DESC LIMIT ${limit}
-  `;
-  return enrichArticles(result);
-}
+export const getArticlesBySection = unstable_cache(
+  async (section: 'wire' | 'institute', limit = 20) => {
+    const result = await sql`
+      SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
+      FROM articles 
+      LEFT JOIN analysts ON articles.analyst_id = analysts.id 
+      WHERE articles.section = ${section} AND articles.is_published = true 
+      ORDER BY articles.published_at DESC LIMIT ${limit}
+    `;
+    return enrichArticles(result);
+  },
+  ['articles-by-section'],
+  { revalidate: 300, tags: ['articles'] }
+)
 
 export async function getArticleBySlug(slug: string): Promise<ArticleWithMeta | null> {
   const result = await sql`

@@ -48,6 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   session: {
     strategy: "jwt",
+    maxAge: 8 * 60 * 60, // 8 hours
   },
   callbacks: {
     jwt({ token, user }) {
@@ -62,7 +63,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).id = token.sub;
       }
       return session;
-    }
+    },
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user
+      const isAdminRoute = nextUrl.pathname.startsWith('/admin')
+      const isLoginPage = nextUrl.pathname === '/admin/login'
+      if (isAdminRoute && !isLoginPage && !isLoggedIn) return false
+      return true
+    },
   },
   pages: {
     signIn: '/admin/login',

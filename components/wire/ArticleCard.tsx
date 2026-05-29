@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArticleWithMeta } from '@/types'
 import { cn, truncate, formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -13,14 +14,18 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
   const CoverImage = () => {
     if (article.cover_image) {
       return (
-        <img
-          src={article.cover_image}
-          alt={article.title}
-          className={cn(
-            'w-full object-cover',
-            variant === 'featured' ? 'h-64' : variant === 'grid' ? 'h-44' : 'w-24 h-20 rounded flex-shrink-0'
-          )}
-        />
+        <div className={cn(
+          'relative overflow-hidden',
+          variant === 'featured' ? 'h-64 w-full' : variant === 'grid' ? 'h-44 w-full' : 'w-24 h-20 rounded flex-shrink-0'
+        )}>
+          <Image
+            src={article.cover_image}
+            alt={article.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </div>
       )
     }
     return (
