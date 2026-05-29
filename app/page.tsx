@@ -1,101 +1,94 @@
-import Image from "next/image";
+'use client'
+import Link from 'next/link'
+import { useState } from 'react'
 
-export default function Home() {
+export default function LandingPage() {
+  const [hovered, setHovered] = useState<'wire' | 'institute' | null>(null)
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="flex h-screen overflow-hidden">
+      {/* Wire half */}
+      <div
+        className="relative flex flex-col items-center justify-center 
+          cursor-pointer transition-all duration-500 ease-in-out"
+        style={{
+          flexBasis: hovered === 'wire' ? '60%' 
+            : hovered === 'institute' ? '40%' : '50%',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+        }}
+        onMouseEnter={() => setHovered('wire')}
+        onMouseLeave={() => setHovered(null)}
+      >
+        <div className="text-center px-8 max-w-sm">
+          <p className="text-blue-400 text-xs tracking-widest uppercase 
+            font-semibold mb-4">
+            Daily Intelligence
+          </p>
+          <h1 className="text-white font-bold text-4xl md:text-5xl 
+            tracking-wide uppercase mb-2">
+            Stratosphere
+          </h1>
+          <p className="text-blue-400 font-medium text-xl mb-6 
+            tracking-wider">
+            Wire
+          </p>
+          <p className="text-slate-400 text-sm leading-relaxed mb-8">
+            Real-time geopolitical analysis. Breaking developments 
+            from every theater of global affairs.
+          </p>
+          <Link
+            href="/wire"
+            className="inline-block bg-blue-600 hover:bg-blue-500 
+              text-white px-8 py-3 rounded-lg font-medium text-sm 
+              transition-colors tracking-wide"
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Enter Wire →
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {/* Vertical divider line */}
+        <div className="absolute right-0 top-0 h-full w-px 
+          bg-slate-600 opacity-50" />
+      </div>
+
+      {/* Institute half */}
+      <div
+        className="relative flex flex-col items-center justify-center 
+          cursor-pointer transition-all duration-500 ease-in-out"
+        style={{
+          flexBasis: hovered === 'institute' ? '60%' 
+            : hovered === 'wire' ? '40%' : '50%',
+          background: 'linear-gradient(135deg, #fafaf9 0%, #f5f0eb 100%)',
+        }}
+        onMouseEnter={() => setHovered('institute')}
+        onMouseLeave={() => setHovered(null)}
+      >
+        <div className="text-center px-8 max-w-sm">
+          <p className="text-amber-700 text-xs tracking-widest uppercase 
+            font-semibold mb-4">
+            Strategic Research
+          </p>
+          <h1 className="text-stone-900 font-serif font-bold 
+            text-4xl md:text-5xl tracking-wide uppercase mb-2">
+            Stratosphere
+          </h1>
+          <p className="text-amber-800 font-serif font-medium text-xl 
+            mb-6 tracking-wider">
+            Institute
+          </p>
+          <p className="text-stone-500 text-sm leading-relaxed mb-8">
+            Long-form policy research and strategic forecasting 
+            for scholars, diplomats, and decision-makers.
+          </p>
+          <Link
+            href="/institute"
+            className="inline-block bg-amber-800 hover:bg-amber-700 
+              text-white px-8 py-3 rounded-lg font-medium text-sm 
+              transition-colors tracking-wide font-serif"
+          >
+            Enter Institute →
+          </Link>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
