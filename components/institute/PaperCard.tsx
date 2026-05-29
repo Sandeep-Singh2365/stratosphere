@@ -32,7 +32,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
             {typeLabel}
           </Badge>
           {article.regions.slice(0, 2).map(r => (
-            <Link key={r.id} href={`/institute/region/${r.slug}`} onClick={e => e.stopPropagation()}>
+            <Link key={r.id} href={`/institute/region/${r.slug}`}>
               <Badge variant="outline"
                 className="text-xs border-stone-300 text-stone-500 hover:bg-stone-100 transition-colors">
                 {r.name}
@@ -40,7 +40,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
             </Link>
           ))}
           {article.topics.slice(0, 2).map(t => (
-            <Link key={t.id} href={`/institute/topic/${t.slug}`} onClick={e => e.stopPropagation()}>
+            <Link key={t.id} href={`/institute/topic/${t.slug}`}>
               <Badge variant="outline"
                 className="text-xs border-amber-300 text-amber-700 hover:bg-amber-50 transition-colors">
                 {t.name}
@@ -120,7 +120,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap gap-1 mb-2">
             {article.topics.slice(0, 2).map(t => (
-              <Link key={t.id} href={`/institute/topic/${t.slug}`} onClick={e => e.stopPropagation()}>
+              <Link key={t.id} href={`/institute/topic/${t.slug}`}>
                 <Badge variant="outline"
                   className="text-xs border-amber-300 text-amber-700 hover:bg-amber-50 transition-colors">
                   {t.name}

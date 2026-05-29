@@ -45,7 +45,7 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
         <div className="p-6">
           <div className="flex flex-wrap gap-2 mb-3">
             {article.regions.slice(0, 2).map(r => (
-              <Link key={r.id} href={`/wire/region/${r.slug}`} onClick={e => e.stopPropagation()}>
+              <Link key={r.id} href={`/wire/region/${r.slug}`}>
                 <Badge variant="outline"
                   className="text-xs border-blue-500 text-blue-400 hover:bg-blue-950 transition-colors">
                   {r.name}
@@ -53,7 +53,7 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
               </Link>
             ))}
             {article.topics.slice(0, 2).map(t => (
-              <Link key={t.id} href={`/wire/topic/${t.slug}`} onClick={e => e.stopPropagation()}>
+              <Link key={t.id} href={`/wire/topic/${t.slug}`}>
                 <Badge variant="outline"
                   className="text-xs border-purple-500 text-purple-400 hover:bg-purple-950 transition-colors">
                   {t.name}
@@ -100,7 +100,7 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
         <CoverImage />
         <div className="p-4">
           {article.regions[0] && (
-            <Link href={`/wire/region/${article.regions[0].slug}`} onClick={e => e.stopPropagation()}>
+            <Link href={`/wire/region/${article.regions[0].slug}`}>
               <Badge variant="outline"
                 className="text-xs border-blue-500 text-blue-400 hover:bg-blue-950 transition-colors mb-2">
                 {article.regions[0].name}
@@ -144,7 +144,7 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
       <CoverImage />
       <div className="flex-1 min-w-0">
         {article.regions[0] && (
-          <Link href={`/wire/region/${article.regions[0].slug}`} onClick={e => e.stopPropagation()}>
+          <Link href={`/wire/region/${article.regions[0].slug}`}>
             <Badge variant="outline"
               className="text-xs border-blue-500 text-blue-400 hover:bg-blue-950 transition-colors mb-1">
               {article.regions[0].name}
