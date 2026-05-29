@@ -6,6 +6,15 @@ import FellowCard from '@/components/institute/FellowCard'
 import ResearchAreaCard from '@/components/institute/ResearchAreaCard'
 import Link from 'next/link'
 import NewsletterForm from '@/components/shared/NewsletterForm'
+import nextDynamic from 'next/dynamic'
+import CoverageChart from '@/components/shared/CoverageChart'
+
+const WorldMap = nextDynamic(
+  () => import('@/components/shared/WorldMap'),
+  { ssr: false, loading: () => (
+    <div className="h-80 bg-institute-card border border-institute-border rounded-xl animate-pulse" />
+  )}
+)
 
 export const dynamic = 'force-dynamic'
 
@@ -17,6 +26,22 @@ export default async function InstituteHomePage() {
     getAllTopics(),
     getAllRegions(),
   ])
+
+  const regionChartData = regions.map(r => ({
+    name: r.name.split(' ')[0], // first word for brevity
+    count: r.article_count ?? 0,
+    color: r.color,
+  }))
+
+  const topicChartData = topics.map(t => ({
+    name: t.name.split(' ')[0],
+    count: t.article_count ?? 0,
+    color: t.color,
+  }))
+
+  const articleCountsByRegion = Object.fromEntries(
+    regions.map(r => [r.slug, r.article_count ?? 0])
+  )
 
   const totalPapers = papers.length
   const totalFellows = analysts.length
@@ -124,6 +149,29 @@ export default async function InstituteHomePage() {
           {analysts.map(analyst => (
             <FellowCard key={analyst.id} analyst={analyst} />
           ))}
+        </div>
+      </section>
+
+      <section className="mb-10">
+        <h2 className="text-2xl font-serif font-bold text-institute-text mb-6">
+          Research Coverage
+        </h2>
+        <WorldMap 
+          theme="institute" 
+          section="institute"
+          articleCounts={articleCountsByRegion}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <CoverageChart 
+            data={regionChartData} 
+            theme="institute" 
+            title="Publications by Region" 
+          />
+          <CoverageChart 
+            data={topicChartData} 
+            theme="institute" 
+            title="Publications by Topic" 
+          />
         </div>
       </section>
 

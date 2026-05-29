@@ -6,6 +6,15 @@ import ArticleCard from '@/components/wire/ArticleCard'
 import FilterBar from '@/components/wire/FilterBar'
 import AnalystCard from '@/components/wire/AnalystCard'
 import NewsletterForm from '@/components/shared/NewsletterForm'
+import nextDynamic from 'next/dynamic'
+import CoverageChart from '@/components/shared/CoverageChart'
+
+const WorldMap = nextDynamic(
+  () => import('@/components/shared/WorldMap'),
+  { ssr: false, loading: () => (
+    <div className="h-80 bg-wire-card border border-wire-border rounded-xl animate-pulse" />
+  )}
+)
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +32,22 @@ export default async function WireHomePage({
     getAllTopics(),
     getAllAnalysts(),
   ])
+
+  const regionChartData = regions.map(r => ({
+    name: r.name.split(' ')[0], // first word for brevity
+    count: r.article_count ?? 0,
+    color: r.color,
+  }))
+
+  const topicChartData = topics.map(t => ({
+    name: t.name.split(' ')[0],
+    count: t.article_count ?? 0,
+    color: t.color,
+  }))
+
+  const articleCountsByRegion = Object.fromEntries(
+    regions.map(r => [r.slug, r.article_count ?? 0])
+  )
 
   let articles
   if (activeRegion) {
@@ -106,6 +131,30 @@ export default async function WireHomePage({
                 ))}
               </div>
             </section>
+            
+            <section className="py-8">
+              <h2 className="text-xl font-serif font-bold text-white mb-6">
+                Global Coverage
+              </h2>
+              <WorldMap 
+                theme="wire" 
+                section="wire"
+                articleCounts={articleCountsByRegion}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                <CoverageChart 
+                  data={regionChartData} 
+                  theme="wire" 
+                  title="Articles by Region" 
+                />
+                <CoverageChart 
+                  data={topicChartData} 
+                  theme="wire" 
+                  title="Articles by Topic" 
+                />
+              </div>
+            </section>
+
             <section className="bg-wire-card border border-wire-border 
               rounded-xl p-8 my-8 text-center">
               <h2 className="text-2xl font-serif font-bold text-white mb-2">

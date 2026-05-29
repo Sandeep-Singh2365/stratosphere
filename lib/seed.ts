@@ -64,27 +64,30 @@ async function seed() {
         name: "Dr. Priya Menon",
         slug: "priya-menon",
         title: "Senior Fellow, Indo-Pacific Security",
-        bio: "Dr. Menon is a strategic affairs analyst specialising in maritime security, Quad dynamics, and India-ASEAN relations. She has advised multiple government bodies on Indo-Pacific policy."
+        bio: "Dr. Menon is a strategic affairs analyst specialising in maritime security, Quad dynamics, and India-ASEAN relations. She has advised multiple government bodies on Indo-Pacific policy.",
+        photo_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&crop=face"
       },
       {
         name: "Marcus Heller",
         slug: "marcus-heller",
         title: "Research Director, Euro-Atlantic Affairs",
-        bio: "Marcus Heller tracks NATO expansion, European energy security, and the geopolitics of the Russia-Ukraine conflict. Former consultant to the European Council on Foreign Relations."
+        bio: "Marcus Heller tracks NATO expansion, European energy security, and the geopolitics of the Russia-Ukraine conflict. Former consultant to the European Council on Foreign Relations.",
+        photo_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&crop=face"
       },
       {
         name: "Aisha Okonkwo",
         slug: "aisha-okonkwo",
         title: "Fellow, African Strategic Studies",
-        bio: "Aisha Okonkwo researches great power competition in Africa, resource geopolitics, and the political economy of the Sahel region."
+        bio: "Aisha Okonkwo researches great power competition in Africa, resource geopolitics, and the political economy of the Sahel region.",
+        photo_url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&auto=format&fit=crop&crop=face"
       }
     ];
 
     for (const a of analysts) {
       await sql`
-        INSERT INTO analysts (name, slug, title, bio)
-        VALUES (${a.name}, ${a.slug}, ${a.title}, ${a.bio})
-        ON CONFLICT (slug) DO NOTHING
+        INSERT INTO analysts (name, slug, title, bio, photo_url)
+        VALUES (${a.name}, ${a.slug}, ${a.title}, ${a.bio}, ${a.photo_url})
+        ON CONFLICT (slug) DO UPDATE SET photo_url = EXCLUDED.photo_url
       `;
     }
     console.log("Analysts seeded.");
@@ -116,6 +119,7 @@ async function seed() {
         topics: ["defense-security", "maritime-security"],
         is_featured: true,
         read_time: 6,
+        cover_image: "https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&auto=format&fit=crop",
         content: `The recent joint naval maneuvers in the Philippine Sea mark a significant expansion of tactical interoperability among the Quadrilateral Security Dialogue nations. As maritime challenges in the region grow more complex, the coordinated deployment of surface combatants and anti-submarine warfare assets underscores a collective resolve. This security coordination serves as a direct message concerning the preservation of a free and open Indo-Pacific.
 
 Strategic competition in the South China Sea has entered a new phase, characterized by persistent grey-zone activities and reinforced militarization of features. Quad members are seeking to counter these actions by offering alternative maritime domain awareness frameworks to Southeast Asian partners. By enhancing joint tracking capabilities, the coalition hopes to deter coercive actions without triggering escalatory kinetic conflicts.
@@ -135,6 +139,7 @@ Ultimately, the momentum of the Quad will depend on its ability to institutional
         topics: ["energy-policy", "geoeconomics"],
         is_featured: true,
         read_time: 7,
+        cover_image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&auto=format&fit=crop",
         content: `The swift redirection of European energy imports following the disruption of eastern pipeline flows represents one of the most rapid infrastructure transitions in modern history. Faced with severe winter supply shortfalls, European capitals quickly mobilized capital to build floating storage and regasification units (FSRUs). This emergency action successfully averted economic collapse and established new pipelines linking Western ports to the industrial core.
 
 Beyond immediate fossil fuel alternatives, the crisis has catalyzed a structural shift toward decarbonization and sovereign energy generation. Significant investments are flowing into offshore wind grids in the North Sea and solar arrays across the Mediterranean. These clean energy projects are no longer viewed merely as climate mitigation strategies but as vital pillars of national security.
@@ -154,6 +159,7 @@ In the long term, Europe's energy security will rely on deep regional integratio
         topics: ["defense-security", "global-governance"],
         is_featured: false,
         read_time: 8,
+        cover_image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&auto=format&fit=crop",
         content: `The restructuring and partial withdrawal of Russian auxiliary security forces from the Sahel region has disrupted the fragile security frameworks established by local military administrations. For several years, these private military formations provided tactical support and regime protection in exchange for mining concessions. Their sudden retreat leaves military regimes in Bamako and Ouagadougou facing renewed insurgencies without adequate air support or intelligence capabilities.
 
 Taking advantage of this retreat, jihadist coalitions affiliated with Al-Qaeda and Islamic State are intensifying operations across rural areas. The conflict is increasingly spilling southward toward the northern borders of littoral West African states, threatening regional trade hubs. Local militaries, weakened by internal purges and lack of international training, are struggling to hold territory.
@@ -173,6 +179,7 @@ Stabilizing the Sahel will require addressing the root causes of instability, in
         topics: ["geoeconomics", "global-governance"],
         is_featured: false,
         read_time: 5,
+        cover_image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&auto=format&fit=crop",
         content: `The expansion of the BRICS grouping to include new Middle Eastern and African economies marks a significant attempt to reshape global governance structures. Proponents argue that the enlarged bloc represents a larger share of global GDP and population, challenging Western-dominated financial institutions. However, this rapid enlargement risks diluting the group's decision-making consensus and amplifying internal rivalries.
 
 A key point of contention is the push by some members to create alternative settlement mechanisms to bypass the US dollar. While nations subject to Western sanctions strongly advocate for rapid de-dollarization, other major economies favor a more cautious approach. Developing a unified BRICS currency remains a distant goal due to divergent monetary policies and capital controls.
@@ -192,6 +199,7 @@ Moving forward, BRICS must balance its geopolitical aspirations with economic re
         topics: ["global-governance", "defense-security"],
         is_featured: false,
         read_time: 9,
+        cover_image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop",
         content: `The post-ceasefire landscape in the Levant is characterized by intense diplomatic maneuvering as regional powers compete to shape post-conflict governance. The destruction of infrastructure and displacement of population have created an urgent need for reconstruction funds and security stabilization. However, foreign assistance remains contingent on establishing a viable political roadmap that satisfies competing regional interests.
 
 Saudi Arabia and its Gulf allies are pushing for a normalized security framework linked to concrete steps toward a two-state solution. In contrast, Iran continues to support its network of regional proxies, maintaining leverage over key transit routes and border areas. Meanwhile, Turkey seeks to position itself as a key mediator, leveraging its ties with various political factions to expand its regional influence.
@@ -211,6 +219,7 @@ Ultimately, a stable regional order requires reconciling the security needs of a
         topics: ["geoeconomics", "information-warfare"],
         is_featured: false,
         read_time: 6,
+        cover_image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop",
         content: `The concentration of advanced semiconductor manufacturing in the Taiwan Strait has created a unique vulnerability in the global technology supply chain. High-end microchips are essential for everything from artificial intelligence to precision-guided munitions, making access to these components a national security priority. Consequently, the leading fabrication plants in Hsinchu are now major points of contention in the US-China strategic rivalry.
 
 In response to this vulnerability, major powers are pursuing policies of semiconductor nationalism, investing billions to build domestic fabrication capacity. The US CHIPS Act and similar European programs aim to reduce reliance on East Asian supply chains by subsidizing local manufacturing facilities. However, replicating the complex ecosystem of suppliers, specialized chemicals, and skilled engineering talent will take years.
@@ -231,6 +240,7 @@ As chip manufacturing becomes increasingly politicized, the role of corporate ac
         is_featured: true,
         read_time: 22,
         pdf_url: "/papers/maritime-chokepoints-2025.pdf",
+        cover_image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&auto=format&fit=crop",
         content: `The geography of global maritime trade is defined by narrow corridors that concentrate shipping lanes, making them critical nodes in international security. The Strait of Malacca, the Bab-el-Mandeb, and the Strait of Hormuz facilitate the movement of energy resources and manufactured goods between East Asia, the Middle East, and Europe. In an era of growing great power competition, these chokepoints are increasingly vulnerable to military blockades, asymmetric attacks, and state-sponsored piracy.
 
 In the Indo-Pacific, the Malacca Strait represents a significant strategic vulnerability for energy-importing economies. The threat of a naval blockade has driven efforts to develop alternative overland transit routes and expand maritime security partnerships. At the same time, regional powers are building up their naval forces and establishing new outposts to monitor traffic through nearby waterways, increasing the density of military assets in these areas.
@@ -251,6 +261,7 @@ Over the next decade, securing these maritime chokepoints will require updated s
         is_featured: false,
         read_time: 18,
         pdf_url: "/papers/green-transition-geopolitics.pdf",
+        cover_image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format&fit=crop",
         content: `The global shift toward renewable energy is redrawing the map of geopolitical power, replacing traditional oil and gas dependencies with new resource dynamics. High-capacity batteries, wind turbines, and solar panels require steady supplies of critical minerals like lithium, cobalt, nickel, and rare earth elements. As a result, securing access to these mining and processing supply chains has become a primary objective of industrial and foreign policy.
 
 Currently, a significant portion of critical mineral refining and processing is concentrated in a few countries, creating potential supply vulnerabilities for import-dependent nations. In response, Western economies are building new partnerships with resource-rich states, particularly in Sub-Saharan Africa and Latin America. These initiatives seek to counter existing monopolies by investing in local infrastructure and processing facilities.
@@ -270,9 +281,10 @@ In the long term, a stable energy transition requires diversifying both extracti
         topics: ["information-warfare", "global-governance"],
         is_featured: false,
         read_time: 25,
+        cover_image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop",
         content: `The integration of digital technologies into modern conflict has transformed the information space into an active domain of warfare. State and non-state actors deploy coordinated disinformation campaigns to influence public opinion, undermine trust in democratic institutions, and disrupt decision-making processes. Analyzing these operations in active conflict zones provides valuable lessons for building societal resilience against cognitive manipulation.
 
-In Eastern Europe, information operations are closely coordinated with physical military actions, using cyber attacks and fabricated narratives to demoralize opponents. In the Asia-Pacific, campaigns focus on amplifying social divisions and undermining trust in democratic processes to influence political outcomes. In the Sahel, information operations exploit local grievances against international partners to build support for new political alignments.
+In Eastern Europe, information operations are closely coordinated with physical military actions, using cyber attacks and fabricated narratives to demoralize opponents. In the Asia-Pacific, campaigns focus on amplifying social divisions and undermining trust in democratic processes to influence political outcomes. In the Sahel, information operations exploit local grievances against environmental partners to build support for new political alignments.
 
 Countering these operations is difficult because the tactics used often exploit the open nature of democratic societies. Traditional responses, such as fact-checking and content moderation, are often too slow to match the scale and speed of automated disinformation. Furthermore, government interventions must be carefully managed to avoid infringing on speech and press freedoms.
 
@@ -289,6 +301,7 @@ Building long-term resilience requires a multi-layered approach that goes beyond
         topics: ["geoeconomics", "global-governance"],
         is_featured: false,
         read_time: 14,
+        cover_image: "https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=800&auto=format&fit=crop",
         content: `The rising global demand for strategic minerals has initiated a new wave of competition for access to Africa's mineral wealth. Major economies are seeking to secure supply agreements for materials essential to defense and green energy technologies. Unlike past resource rushes, however, African states are using their leverage to negotiate more favorable terms, seeking to move beyond raw material export to domestic industrialization.
 
 Across the continent, governments are updating mining laws to mandate local processing, increase state participation, and improve environmental standards. These policies aim to capture a larger share of the value chain within domestic economies, creating jobs and supporting broader development. However, implementing these regulations requires balancing sovereignty with the need to attract foreign capital.
@@ -307,7 +320,7 @@ Ultimately, the long-term benefit of Africa's mineral wealth will depend on the 
       }
 
       await sql`
-        INSERT INTO articles (title, slug, abstract, content, section, content_type, analyst_id, is_published, is_featured, published_at, read_time, pdf_url)
+        INSERT INTO articles (title, slug, abstract, content, section, content_type, analyst_id, is_published, is_featured, published_at, read_time, pdf_url, cover_image)
         VALUES (
           ${art.title},
           ${art.slug},
@@ -320,9 +333,10 @@ Ultimately, the long-term benefit of Africa's mineral wealth will depend on the 
           ${art.is_featured},
           NOW(),
           ${art.read_time},
-          ${art.pdf_url || null}
+          ${art.pdf_url || null},
+          ${art.cover_image || null}
         )
-        ON CONFLICT (slug) DO NOTHING
+        ON CONFLICT (slug) DO UPDATE SET cover_image = EXCLUDED.cover_image
       `;
     }
     console.log("Articles seeded.");
