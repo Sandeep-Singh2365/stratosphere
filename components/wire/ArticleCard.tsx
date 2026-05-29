@@ -63,9 +63,14 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
           </p>
           <div className="flex items-center gap-3 text-xs">
             {article.analyst_name && (
-              <span className="text-wire-accent font-medium">
-                {article.analyst_name}
-              </span>
+              article.analyst_slug ? (
+                <Link href={`/wire/analyst/${article.analyst_slug}`}
+                  className="text-wire-accent font-medium hover:underline">
+                  {article.analyst_name}
+                </Link>
+              ) : (
+                <span className="text-wire-accent font-medium">{article.analyst_name}</span>
+              )
             )}
             <span className="text-wire-muted">
               {article.read_time} min read
@@ -104,7 +109,14 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
           </p>
           <div className="flex items-center gap-2 text-xs">
             {article.analyst_name && (
-              <span className="text-wire-accent">{article.analyst_name}</span>
+              article.analyst_slug ? (
+                <Link href={`/wire/analyst/${article.analyst_slug}`}
+                  className="text-wire-accent font-medium hover:underline">
+                  {article.analyst_name}
+                </Link>
+              ) : (
+                <span className="text-wire-accent">{article.analyst_name}</span>
+              )
             )}
             <span className="text-wire-muted">·</span>
             <span className="text-wire-muted">{article.read_time} min read</span>
@@ -134,7 +146,14 @@ export default function ArticleCard({ article, variant }: ArticleCardProps) {
         </Link>
         <div className="flex items-center gap-2 text-xs text-wire-muted">
           {article.analyst_name && (
-            <span>{article.analyst_name}</span>
+            article.analyst_slug ? (
+              <Link href={`/wire/analyst/${article.analyst_slug}`}
+                className="text-wire-accent font-medium hover:underline">
+                {article.analyst_name}
+              </Link>
+            ) : (
+              <span>{article.analyst_name}</span>
+            )
           )}
           <span>·</span>
           <span>{formatDate(article.published_at)}</span>

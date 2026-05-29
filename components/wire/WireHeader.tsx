@@ -46,7 +46,7 @@ export function WireHeader() {
                 px-3 py-1.5 rounded-lg hover:border-wire-muted">
               Institute →
             </Link>
-            <Link href="/admin"
+            <Link href="/admin/login"
               className="text-wire-muted hover:text-white text-xs 
                 transition-colors">
               Admin

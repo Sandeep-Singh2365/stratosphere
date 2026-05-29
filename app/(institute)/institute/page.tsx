@@ -5,6 +5,7 @@ import PaperCard from '@/components/institute/PaperCard'
 import FellowCard from '@/components/institute/FellowCard'
 import ResearchAreaCard from '@/components/institute/ResearchAreaCard'
 import Link from 'next/link'
+import NewsletterForm from '@/components/shared/NewsletterForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -136,20 +137,7 @@ export default async function InstituteHomePage() {
           Receive our quarterly policy briefs and strategic forecasts 
           directly in your inbox.
         </p>
-        <div className="flex gap-3 max-w-md mx-auto">
-          <input
-            type="email"
-            placeholder="your@email.com"
-            className="flex-1 bg-white border border-institute-border 
-              rounded-lg px-4 py-2 text-institute-text text-sm 
-              focus:outline-none focus:border-institute-accent"
-          />
-          <button className="bg-institute-accent hover:bg-amber-900 
-            text-white px-6 py-2 rounded-lg text-sm font-medium 
-            transition-colors">
-            Subscribe
-          </button>
-        </div>
+        <NewsletterForm theme="institute" />
       </section>
     </div>
   )

@@ -1,5 +1,6 @@
 import { getArticleBySlug } from '@/lib/queries'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { marked } from 'marked'
@@ -75,9 +76,16 @@ export default async function ResearchPage({
         border-b border-institute-border pb-6 mb-8">
         <div className="flex items-center gap-4">
           {article.analyst_name && (
-            <span className="text-institute-accent font-medium text-sm">
-              {article.analyst_name}
-            </span>
+            article.analyst_slug ? (
+              <Link href={`/institute/fellow/${article.analyst_slug}`}
+                className="text-institute-accent font-medium text-sm hover:underline">
+                {article.analyst_name}
+              </Link>
+            ) : (
+              <span className="text-institute-accent font-medium text-sm">
+                {article.analyst_name}
+              </span>
+            )
           )}
           <span className="text-institute-muted text-sm">
             {formatDate(article.published_at)}
@@ -86,7 +94,7 @@ export default async function ResearchPage({
             {article.read_time} min read
           </span>
         </div>
-        {article.pdf_url && (
+        {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
           <a
             href={article.pdf_url}
             target="_blank"

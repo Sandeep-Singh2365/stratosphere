@@ -17,7 +17,7 @@ export default function BreakingTicker({ articles }: TickerProps) {
         </span>
         <span className="ml-3 text-blue-300">|</span>
       </div>
-      <div className="flex animate-ticker ticker-pause whitespace-nowrap">
+      <div className="flex animate-ticker ticker-pause whitespace-nowrap" style={{ animationDuration: '60s' }}>
         {items.map((article, i) => (
           <Link
             key={i}

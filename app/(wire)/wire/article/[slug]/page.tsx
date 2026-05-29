@@ -1,5 +1,6 @@
 import { getArticleBySlug, getArticlesByRegion } from '@/lib/queries'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import ArticleCard from '@/components/wire/ArticleCard'
@@ -67,9 +68,16 @@ export default async function ArticlePage({
       {/* Byline */}
       <div className="flex items-center gap-4 mb-6">
         {article.analyst_name && (
-          <span className="text-wire-accent font-medium">
-            {article.analyst_name}
-          </span>
+          article.analyst_slug ? (
+            <Link href={`/wire/analyst/${article.analyst_slug}`}
+              className="text-wire-accent font-medium hover:underline">
+              {article.analyst_name}
+            </Link>
+          ) : (
+            <span className="text-wire-accent font-medium">
+              {article.analyst_name}
+            </span>
+          )
         )}
         <span className="text-wire-muted text-sm">
           {formatDate(article.published_at)}

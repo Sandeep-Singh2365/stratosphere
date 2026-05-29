@@ -47,7 +47,7 @@ export function InstituteHeader() {
                 hover:border-institute-muted">
               Wire →
             </Link>
-            <Link href="/admin"
+            <Link href="/admin/login"
               className="text-institute-muted hover:text-institute-text 
                 text-xs transition-colors">
               Admin

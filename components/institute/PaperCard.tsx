@@ -57,9 +57,16 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-xs">
             {article.analyst_name && (
-              <span className="text-institute-accent font-medium">
-                {article.analyst_name}
-              </span>
+              article.analyst_slug ? (
+                <Link href={`/institute/fellow/${article.analyst_slug}`}
+                  className="text-institute-accent font-medium hover:underline">
+                  {article.analyst_name}
+                </Link>
+              ) : (
+                <span className="text-institute-accent font-medium">
+                  {article.analyst_name}
+                </span>
+              )
             )}
             <span className="text-institute-muted">
               {formatDate(article.published_at)}
@@ -68,7 +75,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
               {article.read_time} min read
             </span>
           </div>
-          {article.pdf_url && (
+          {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
             <a
               href={article.pdf_url}
               className="text-xs text-institute-accent hover:underline 
@@ -97,7 +104,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
           <p className="text-institute-muted text-xs mt-2">
             {formatDate(article.published_at)}
           </p>
-          {article.pdf_url && (
+          {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
             <a href={article.pdf_url}
               className="text-xs text-institute-accent hover:underline 
                 mt-1 inline-block"
@@ -127,9 +134,16 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
             {article.abstract}
           </p>
           {article.analyst_name && (
-            <p className="text-institute-accent text-xs font-medium mt-2">
-              {article.analyst_name}
-            </p>
+            article.analyst_slug ? (
+              <Link href={`/institute/fellow/${article.analyst_slug}`}
+                className="text-institute-accent text-xs font-medium mt-2 hover:underline">
+                {article.analyst_name}
+              </Link>
+            ) : (
+              <p className="text-institute-accent text-xs font-medium mt-2">
+                {article.analyst_name}
+              </p>
+            )
           )}
         </div>
       </div>
@@ -146,7 +160,16 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
         </h4>
       </Link>
       <div className="flex items-center gap-2 text-xs text-institute-muted">
-        {article.analyst_name && <span>{article.analyst_name}</span>}
+        {article.analyst_name && (
+          article.analyst_slug ? (
+            <Link href={`/institute/fellow/${article.analyst_slug}`}
+              className="hover:underline text-institute-accent font-medium">
+              {article.analyst_name}
+            </Link>
+          ) : (
+            <span>{article.analyst_name}</span>
+          )
+        )}
         <span>·</span>
         <span>{formatDate(article.published_at)}</span>
       </div>
