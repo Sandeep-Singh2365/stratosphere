@@ -10,7 +10,7 @@ async function seed() {
 
     // Read admin credentials from environment (falling back to defaults if not loaded)
     const email = process.env.ADMIN_EMAIL || 'admin@stratosphere.com';
-    const password = process.env.ADMIN_PASSWORD || 'Admin@1234';
+    const password = process.env.ADMIN_PASSWORD || 'CHANGE_ME_IN_PRODUCTION';
 
     // Step 1: Insert admin user
     const passwordHash = await bcrypt.hash(password, 12);

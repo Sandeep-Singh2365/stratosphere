@@ -105,7 +105,7 @@ Both Wire and Institute share a single Next.js application, database, and admin 
    NEXTAUTH_SECRET=your-random-32-char-secret-here
    NEXTAUTH_URL=http://localhost:3000
    ADMIN_EMAIL=admin@stratosphere.com
-   ADMIN_PASSWORD=YourSecurePassword123
+   ADMIN_PASSWORD=your-secure-password-here
    ```
 
 4. **Run database migrations**
@@ -164,7 +164,7 @@ Access the admin portal at `/admin/login`.
 **Default credentials** (created by the seed script):
 
 - Email: `admin@stratosphere.com`
-- Password: `Admin@1234` (or whatever you set in `ADMIN_PASSWORD`)
+- Password: (set via `ADMIN_PASSWORD` environment variable)
 
 > Change the default password immediately after first login in production.
 
