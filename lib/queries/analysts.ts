@@ -1,7 +1,8 @@
-import { sql } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { Analyst } from '@/types';
 
 export async function getAllAnalysts(): Promise<Analyst[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT analysts.*, COUNT(articles.id)::integer as article_count 
     FROM analysts 
@@ -13,6 +14,7 @@ export async function getAllAnalysts(): Promise<Analyst[]> {
 }
 
 export async function getAnalystBySlug(slug: string): Promise<Analyst | null> {
+  const sql = getDb();
   const result = await sql`
     SELECT analysts.*, COUNT(articles.id)::integer as article_count 
     FROM analysts 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { sql } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { Article, NewsletterSubscriber, User } from '@/types';
 
 export type ArticleInsert = {
@@ -21,6 +21,7 @@ export type ArticleInsert = {
 };
 
 export async function createArticle(data: ArticleInsert): Promise<Article> {
+  const sql = getDb();
   const result = await sql`
     INSERT INTO articles (
       title, slug, abstract, content, cover_image, section, content_type,
@@ -66,6 +67,7 @@ export async function createArticle(data: ArticleInsert): Promise<Article> {
 }
 
 export async function updateArticle(id: string, data: Partial<ArticleInsert>): Promise<Article> {
+  const sql = getDb();
   const result = await sql`
     UPDATE articles SET
       title = CASE WHEN ${data.title === undefined} THEN title ELSE ${data.title ?? null} END,
@@ -120,10 +122,12 @@ export async function updateArticle(id: string, data: Partial<ArticleInsert>): P
 }
 
 export async function deleteArticle(id: string): Promise<void> {
+  const sql = getDb();
   await sql`DELETE FROM articles WHERE id = ${id}`;
 }
 
 export async function publishArticle(id: string): Promise<void> {
+  const sql = getDb();
   await sql`
     UPDATE articles 
     SET is_published = true, published_at = NOW(), updated_at = NOW() 
@@ -132,6 +136,7 @@ export async function publishArticle(id: string): Promise<void> {
 }
 
 export async function toggleFeatured(id: string, value: boolean): Promise<void> {
+  const sql = getDb();
   await sql`
     UPDATE articles 
     SET is_featured = ${value}, updated_at = NOW() 
@@ -141,6 +146,7 @@ export async function toggleFeatured(id: string, value: boolean): Promise<void> 
 
 export async function addNewsletterSubscriber(email: string): Promise<{ success: boolean; alreadyExists: boolean }> {
   try {
+    const sql = getDb();
     const existing = await sql`
       SELECT * FROM newsletter_subscribers WHERE email = ${email}
     `;
@@ -161,6 +167,7 @@ export async function addNewsletterSubscriber(email: string): Promise<{ success:
 }
 
 export async function getUserByEmail(email: string): Promise<(User & { password_hash: string }) | null> {
+  const sql = getDb();
   const result = await sql`
     SELECT * FROM users WHERE email = ${email} LIMIT 1
   `;
@@ -169,6 +176,7 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
 }
 
 export async function getAllSubscribers(): Promise<NewsletterSubscriber[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC
   `;

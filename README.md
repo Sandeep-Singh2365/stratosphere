@@ -182,10 +182,33 @@ From the admin panel you can:
 
 1. Push your repository to GitHub.
 2. Connect the repo in the [Netlify dashboard](https://app.netlify.com).
-3. Set all environment variables from the table above in **Site settings → Environment variables**.
-4. Netlify will auto-deploy on every push to your main branch.
+3. Set the following environment variables in **Site settings → Build & deploy → Environment → Environment variables**:
+
+   **Required Variables:**
+   - `DATABASE_URL` - Your Neon PostgreSQL connection string (format: `postgresql://user:pass@host/db?sslmode=require`)
+   - `NEXTAUTH_SECRET` - Random 32+ character string for JWT signing
+   - `NEXTAUTH_URL` - Your production URL (e.g., `https://your-site.netlify.app`)
+   - `ADMIN_EMAIL` - Admin email address
+   - `ADMIN_PASSWORD` - Admin password
+
+   **Getting your DATABASE_URL from Neon:**
+   - Go to your Neon dashboard
+   - Select your project
+   - Copy the connection string from the "Connection Details" tab
+   - Ensure it includes `?sslmode=require` at the end
+
+4. Set the Node version in **Site settings → Build & deploy → Environment → Environment variables**:
+   - Key: `NODE_VERSION`
+   - Value: `20`
+
+5. Netlify will auto-deploy on every push to your main branch.
 
 The project includes a pre-configured `netlify.toml` with the Next.js plugin and Node 20.
+
+**Troubleshooting Netlify Deploy:**
+- If you see "No database connection string was provided to `neon()`", ensure `DATABASE_URL` is set in Netlify environment variables
+- The DB connection uses lazy initialization to prevent build-time connection attempts
+- All database queries are executed at runtime, not during the build process
 
 ### Neon Database
 

@@ -98,7 +98,7 @@ export default async function ResearchPage({
             {article.read_time} min read
           </span>
         </div>
-        {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
+        {article.pdf_url && (
           <a
             href={article.pdf_url}
             target="_blank"

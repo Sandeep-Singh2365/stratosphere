@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { sql } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { ArticleWithMeta, Region, Topic } from '@/types';
 import { unstable_cache } from 'next/cache';
 
@@ -9,6 +9,7 @@ async function enrichArticles(articles: any[]): Promise<ArticleWithMeta[]> {
   const ids = articles.map(a => a.id)
   
   // Batch fetch all regions for all articles in 2 queries instead of 2N
+  const sql = getDb();
   const allRegionRows = await sql`
     SELECT ar.article_id, r.id, r.name, r.slug, r.color
     FROM article_regions ar
@@ -46,6 +47,7 @@ async function enrichArticles(articles: any[]): Promise<ArticleWithMeta[]> {
 
 export const getFeaturedArticles = unstable_cache(
   async (section: 'wire' | 'institute') => {
+    const sql = getDb();
     const result = await sql`
       SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
       FROM articles 
@@ -62,6 +64,7 @@ export const getFeaturedArticles = unstable_cache(
 
 export const getArticlesBySection = unstable_cache(
   async (section: 'wire' | 'institute', limit = 20) => {
+    const sql = getDb();
     const result = await sql`
       SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
       FROM articles 
@@ -76,6 +79,7 @@ export const getArticlesBySection = unstable_cache(
 )
 
 export async function getArticleBySlug(slug: string): Promise<ArticleWithMeta | null> {
+  const sql = getDb();
   const result = await sql`
     SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
     FROM articles 
@@ -89,6 +93,7 @@ export async function getArticleBySlug(slug: string): Promise<ArticleWithMeta | 
 
 export async function getArticlesByRegion(regionSlug: string, section?: string): Promise<ArticleWithMeta[]> {
   let result;
+  const sql = getDb();
   if (section) {
     result = await sql`
       SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
@@ -116,6 +121,7 @@ export async function getArticlesByRegion(regionSlug: string, section?: string):
 
 export async function getArticlesByTopic(topicSlug: string, section?: string): Promise<ArticleWithMeta[]> {
   let result;
+  const sql = getDb();
   if (section) {
     result = await sql`
       SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
@@ -142,6 +148,7 @@ export async function getArticlesByTopic(topicSlug: string, section?: string): P
 }
 
 export async function getArticlesByAnalyst(analystSlug: string): Promise<ArticleWithMeta[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
     FROM articles 
@@ -154,6 +161,7 @@ export async function getArticlesByAnalyst(analystSlug: string): Promise<Article
 
 export async function searchArticles(query: string): Promise<ArticleWithMeta[]> {
   const queryPattern = `%${query}%`;
+  const sql = getDb();
   const result = await sql`
     SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
     FROM articles 
@@ -167,6 +175,7 @@ export async function searchArticles(query: string): Promise<ArticleWithMeta[]> 
 }
 
 export async function getAllArticlesAdmin(): Promise<ArticleWithMeta[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT articles.*, analysts.name as analyst_name, analysts.slug as analyst_slug, analysts.photo_url as analyst_photo 
     FROM articles 

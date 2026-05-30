@@ -1,5 +1,6 @@
 'use client'
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Region, Topic } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -10,7 +11,6 @@ interface FilterBarProps {
 }
 
 export default function FilterBar({ regions, topics, basePath }: FilterBarProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const activeRegion = searchParams.get('region')
   const activeTopic = searchParams.get('topic')
@@ -23,35 +23,35 @@ export default function FilterBar({ regions, topics, basePath }: FilterBarProps)
     return qs ? `${basePath}?${qs}` : basePath
   }
 
-  const pillBase = "px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-colors border"
+  const pillBase = "px-3 py-1 rounded-full text-xs font-medium transition-colors border"
   const active = "bg-wire-accent text-white border-wire-accent"
   const inactive = "bg-wire-card text-wire-muted border-wire-border hover:border-wire-accent hover:text-white"
 
   return (
     <div className="flex flex-wrap gap-2 py-4">
-      <button
-        onClick={() => router.push(basePath)}
+      <Link
+        href={basePath}
         className={cn(pillBase, !activeRegion && !activeTopic ? active : inactive)}
       >
         All
-      </button>
+      </Link>
       {regions.map(r => (
-        <button
+        <Link
           key={r.id}
-          onClick={() => router.push(buildUrl(r.slug, activeTopic))}
+          href={buildUrl(r.slug, activeTopic)}
           className={cn(pillBase, activeRegion === r.slug ? active : inactive)}
         >
           {r.name}
-        </button>
+        </Link>
       ))}
       {topics.map(t => (
-        <button
+        <Link
           key={t.id}
-          onClick={() => router.push(buildUrl(activeRegion, t.slug))}
+          href={buildUrl(activeRegion, t.slug)}
           className={cn(pillBase, activeTopic === t.slug ? active : inactive)}
         >
           {t.name}
-        </button>
+        </Link>
       ))}
     </div>
   )

@@ -1,11 +1,12 @@
 'use server'
-import { sql } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
 export async function createAnalystAction(data: {
   name: string; slug: string; title: string; bio: string;
   photo_url?: string; twitter?: string; linkedin?: string;
 }) {
+  const sql = getDb();
   await sql`
     INSERT INTO analysts (name, slug, title, bio, photo_url, twitter, linkedin)
     VALUES (
@@ -18,6 +19,7 @@ export async function createAnalystAction(data: {
 }
 
 export async function deleteAnalystAction(id: string) {
+  const sql = getDb();
   await sql`DELETE FROM analysts WHERE id = ${id}`
   revalidatePath('/admin/analysts')
 }

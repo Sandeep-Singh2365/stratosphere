@@ -1,7 +1,8 @@
-import { sql } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { Region, Topic } from '@/types';
 
 export async function getAllRegions(): Promise<Region[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT regions.*, COUNT(article_regions.article_id)::integer as article_count
     FROM regions 
@@ -13,6 +14,7 @@ export async function getAllRegions(): Promise<Region[]> {
 }
 
 export async function getAllTopics(): Promise<Topic[]> {
+  const sql = getDb();
   const result = await sql`
     SELECT topics.*, COUNT(article_topics.article_id)::integer as article_count
     FROM topics 

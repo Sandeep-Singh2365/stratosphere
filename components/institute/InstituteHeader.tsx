@@ -1,27 +1,34 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
-
-const TOPICS = [
-  { name: 'Geoeconomics', slug: 'geoeconomics' },
-  { name: 'Defense & Security', slug: 'defense-security' },
-  { name: 'Energy Policy', slug: 'energy-policy' },
-  { name: 'Information Warfare', slug: 'information-warfare' },
-  { name: 'Global Governance', slug: 'global-governance' },
-  { name: 'Maritime Security', slug: 'maritime-security' },
-]
-
-const REGIONS = [
-  { name: 'Indo-Pacific', slug: 'indo-pacific' },
-  { name: 'Euro-Atlantic', slug: 'euro-atlantic' },
-  { name: 'MENA', slug: 'mena' },
-  { name: 'Sub-Saharan Africa', slug: 'sub-saharan-africa' },
-  { name: 'Latin America', slug: 'latin-america' },
-]
+import { useState, useEffect } from 'react'
+import { Topic, Region } from '@/types'
 
 export default function InstituteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hoveredNav, setHoveredNav] = useState<string | null>(null)
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [regions, setRegions] = useState<Region[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [topicsRes, regionsRes] = await Promise.all([
+          fetch('/api/topics'),
+          fetch('/api/regions')
+        ])
+        const topicsData = await topicsRes.json()
+        const regionsData = await regionsRes.json()
+        setTopics(topicsData)
+        setRegions(regionsData)
+      } catch (error) {
+        console.error('Failed to fetch navigation data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   return (
     <header className="bg-institute-card border-b border-institute-border 
@@ -69,15 +76,21 @@ export default function InstituteHeader() {
                 <div className="absolute top-full left-0 mt-1 w-56 
                   bg-institute-card border border-institute-border 
                   rounded-xl shadow-lg py-2 z-50">
-                  {TOPICS.map(t => (
-                    <Link key={t.slug}
-                      href={`/institute/topic/${t.slug}`}
-                      className="block px-4 py-2 text-sm 
-                        text-institute-muted hover:text-institute-text 
-                        hover:bg-stone-50 transition-colors font-serif">
-                      {t.name}
-                    </Link>
-                  ))}
+                  {loading ? (
+                    <div className="px-4 py-2 text-sm text-institute-muted">
+                      Loading...
+                    </div>
+                  ) : (
+                    topics.map((t: Topic) => (
+                      <Link key={t.id}
+                        href={`/institute/topic/${t.slug}`}
+                        className="block px-4 py-2 text-sm 
+                          text-institute-muted hover:text-institute-text 
+                          hover:bg-stone-50 transition-colors font-serif">
+                        {t.name}
+                      </Link>
+                    ))
+                  )}
                   <div className="border-t border-institute-border mt-2 pt-2">
                     <Link href="/institute/briefs"
                       className="block px-4 py-2 text-xs 
@@ -109,15 +122,21 @@ export default function InstituteHeader() {
                 <div className="absolute top-full left-0 mt-1 w-52 
                   bg-institute-card border border-institute-border 
                   rounded-xl shadow-lg py-2 z-50">
-                  {REGIONS.map(r => (
-                    <Link key={r.slug}
-                      href={`/institute/region/${r.slug}`}
-                      className="block px-4 py-2 text-sm 
-                        text-institute-muted hover:text-institute-text 
-                        hover:bg-stone-50 transition-colors font-serif">
-                      {r.name}
-                    </Link>
-                  ))}
+                  {loading ? (
+                    <div className="px-4 py-2 text-sm text-institute-muted">
+                      Loading...
+                    </div>
+                  ) : (
+                    regions.map((r: Region) => (
+                      <Link key={r.id}
+                        href={`/institute/region/${r.slug}`}
+                        className="block px-4 py-2 text-sm 
+                          text-institute-muted hover:text-institute-text 
+                          hover:bg-stone-50 transition-colors font-serif">
+                        {r.name}
+                      </Link>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -182,15 +201,21 @@ export default function InstituteHeader() {
               onClick={() => setMobileOpen(false)}>
               Research Areas
             </Link>
-            {TOPICS.map(t => (
-              <Link key={t.slug}
-                href={`/institute/topic/${t.slug}`}
-                className="block px-6 py-1.5 text-institute-muted 
-                  hover:text-institute-text text-xs font-serif transition-colors"
-                onClick={() => setMobileOpen(false)}>
-                · {t.name}
-              </Link>
-            ))}
+            {loading ? (
+              <div className="px-6 py-1.5 text-institute-muted text-xs">
+                Loading...
+              </div>
+            ) : (
+              topics.map((t: Topic) => (
+                <Link key={t.id}
+                  href={`/institute/topic/${t.slug}`}
+                  className="block px-6 py-1.5 text-institute-muted 
+                    hover:text-institute-text text-xs font-serif transition-colors"
+                  onClick={() => setMobileOpen(false)}>
+                  · {t.name}
+                </Link>
+              ))
+            )}
             <Link href="/institute/fellows"
               className="block px-3 py-2 text-institute-muted 
                 hover:text-institute-text text-sm font-serif transition-colors"

@@ -108,7 +108,7 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
           <p className="text-institute-muted text-xs mt-2">
             {formatDate(article.published_at)}
           </p>
-          {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
+          {article.pdf_url && (
             <a href={article.pdf_url}
               className="text-xs text-institute-accent hover:underline 
                 mt-1 inline-block"
