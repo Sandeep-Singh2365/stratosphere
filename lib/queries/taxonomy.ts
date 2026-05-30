@@ -10,7 +10,8 @@ export async function getAllRegions(): Promise<Region[]> {
     GROUP BY regions.id 
     ORDER BY regions.name
   `;
-  return result as Region[];
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return rows as Region[];
 }
 
 export async function getAllTopics(): Promise<Topic[]> {
@@ -22,5 +23,6 @@ export async function getAllTopics(): Promise<Topic[]> {
     GROUP BY topics.id 
     ORDER BY topics.name
   `;
-  return result as Topic[];
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return rows as Topic[];
 }

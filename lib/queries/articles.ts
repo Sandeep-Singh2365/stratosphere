@@ -10,18 +10,21 @@ async function enrichArticles(articles: any[]): Promise<ArticleWithMeta[]> {
   
   // Batch fetch all regions for all articles in 2 queries instead of 2N
   const sql = getDb();
-  const allRegionRows = await sql`
+  const allRegionRowsResult = await sql`
     SELECT ar.article_id, r.id, r.name, r.slug, r.color
     FROM article_regions ar
     JOIN regions r ON r.id = ar.region_id
     WHERE ar.article_id = ANY(${ids}::uuid[])
   `
-  const allTopicRows = await sql`
+  const allRegionRows = Array.isArray(allRegionRowsResult) ? allRegionRowsResult : 'rows' in (allRegionRowsResult as any) ? (allRegionRowsResult as any).rows : [];
+  
+  const allTopicRowsResult = await sql`
     SELECT at.article_id, t.id, t.name, t.slug, t.color
     FROM article_topics at
     JOIN topics t ON t.id = at.topic_id
     WHERE at.article_id = ANY(${ids}::uuid[])
   `
+  const allTopicRows = Array.isArray(allTopicRowsResult) ? allTopicRowsResult : 'rows' in (allTopicRowsResult as any) ? (allTopicRowsResult as any).rows : [];
 
   const regionsByArticle = new Map<string, Region[]>()
   const topicsByArticle = new Map<string, Topic[]>()
@@ -56,7 +59,8 @@ export const getFeaturedArticles = unstable_cache(
       AND articles.is_published = true 
       ORDER BY articles.published_at DESC LIMIT 3
     `;
-    return enrichArticles(result);
+    const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+    return enrichArticles(rows);
   },
   ['featured-articles'],
   { revalidate: 300, tags: ['articles'] } // 5 min cache
@@ -72,7 +76,8 @@ export const getArticlesBySection = unstable_cache(
       WHERE articles.section = ${section} AND articles.is_published = true 
       ORDER BY articles.published_at DESC LIMIT ${limit}
     `;
-    return enrichArticles(result);
+    const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+    return enrichArticles(rows);
   },
   ['articles-by-section'],
   { revalidate: 300, tags: ['articles'] }
@@ -86,8 +91,9 @@ export async function getArticleBySlug(slug: string): Promise<ArticleWithMeta | 
     LEFT JOIN analysts ON articles.analyst_id = analysts.id 
     WHERE articles.slug = ${slug} AND articles.is_published = true
   `;
-  if (result.length === 0) return null;
-  const enriched = await enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  if (rows.length === 0) return null;
+  const enriched = await enrichArticles(rows);
   return enriched[0];
 }
 
@@ -116,7 +122,8 @@ export async function getArticlesByRegion(regionSlug: string, section?: string):
       ORDER BY articles.published_at DESC
     `;
   }
-  return enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return enrichArticles(rows);
 }
 
 export async function getArticlesByTopic(topicSlug: string, section?: string): Promise<ArticleWithMeta[]> {
@@ -144,7 +151,8 @@ export async function getArticlesByTopic(topicSlug: string, section?: string): P
       ORDER BY articles.published_at DESC
     `;
   }
-  return enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return enrichArticles(rows);
 }
 
 export async function getArticlesByAnalyst(analystSlug: string): Promise<ArticleWithMeta[]> {
@@ -156,7 +164,8 @@ export async function getArticlesByAnalyst(analystSlug: string): Promise<Article
     WHERE analysts.slug = ${analystSlug} AND articles.is_published = true
     ORDER BY articles.published_at DESC
   `;
-  return enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return enrichArticles(rows);
 }
 
 export async function searchArticles(query: string): Promise<ArticleWithMeta[]> {
@@ -171,7 +180,8 @@ export async function searchArticles(query: string): Promise<ArticleWithMeta[]> 
     ORDER BY articles.published_at DESC 
     LIMIT 10
   `;
-  return enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return enrichArticles(rows);
 }
 
 export async function getAllArticlesAdmin(): Promise<ArticleWithMeta[]> {
@@ -182,5 +192,6 @@ export async function getAllArticlesAdmin(): Promise<ArticleWithMeta[]> {
     LEFT JOIN analysts ON articles.analyst_id = analysts.id 
     ORDER BY articles.created_at DESC
   `;
-  return enrichArticles(result);
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return enrichArticles(rows);
 }

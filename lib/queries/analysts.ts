@@ -10,7 +10,8 @@ export async function getAllAnalysts(): Promise<Analyst[]> {
     GROUP BY analysts.id 
     ORDER BY analysts.name
   `;
-  return result as Analyst[];
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return rows as Analyst[];
 }
 
 export async function getAnalystBySlug(slug: string): Promise<Analyst | null> {
@@ -22,6 +23,7 @@ export async function getAnalystBySlug(slug: string): Promise<Analyst | null> {
     WHERE analysts.slug = ${slug} 
     GROUP BY analysts.id
   `;
-  if (result.length === 0) return null;
-  return result[0] as Analyst;
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  if (rows.length === 0) return null;
+  return rows[0] as Analyst;
 }

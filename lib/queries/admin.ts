@@ -43,7 +43,8 @@ export async function createArticle(data: ArticleInsert): Promise<Article> {
     ) RETURNING *
   `;
 
-  const article = result[0] as Article;
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  const article = rows[0] as Article;
 
   if (data.region_ids && data.region_ids.length > 0) {
     for (const regionId of data.region_ids) {
@@ -88,11 +89,12 @@ export async function updateArticle(id: string, data: Partial<ArticleInsert>): P
     RETURNING *
   `;
 
-  if (result.length === 0) {
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  if (rows.length === 0) {
     throw new Error(`Article with id ${id} not found`);
   }
 
-  const article = result[0] as Article;
+  const article = rows[0] as Article;
 
   if (data.region_ids !== undefined) {
     await sql`DELETE FROM article_regions WHERE article_id = ${id}`;
@@ -147,9 +149,10 @@ export async function toggleFeatured(id: string, value: boolean): Promise<void> 
 export async function addNewsletterSubscriber(email: string): Promise<{ success: boolean; alreadyExists: boolean }> {
   try {
     const sql = getDb();
-    const existing = await sql`
+    const existingResult = await sql`
       SELECT * FROM newsletter_subscribers WHERE email = ${email}
     `;
+    const existing = Array.isArray(existingResult) ? existingResult : 'rows' in (existingResult as any) ? (existingResult as any).rows : [];
     const alreadyExists = existing.length > 0;
 
     await sql`
@@ -171,8 +174,9 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
   const result = await sql`
     SELECT * FROM users WHERE email = ${email} LIMIT 1
   `;
-  if (result.length === 0) return null;
-  return result[0] as (User & { password_hash: string });
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  if (rows.length === 0) return null;
+  return rows[0] as (User & { password_hash: string });
 }
 
 export async function getAllSubscribers(): Promise<NewsletterSubscriber[]> {
@@ -180,5 +184,6 @@ export async function getAllSubscribers(): Promise<NewsletterSubscriber[]> {
   const result = await sql`
     SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC
   `;
-  return result as NewsletterSubscriber[];
+  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  return rows as NewsletterSubscriber[];
 }
