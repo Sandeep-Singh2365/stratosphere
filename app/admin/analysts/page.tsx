@@ -1,6 +1,6 @@
+import Link from 'next/link'
 import { getAllAnalysts } from '@/lib/queries'
 import { deleteAnalystAction } from '@/app/actions/analysts'
-import { formatDate } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,6 +11,11 @@ export default async function AnalystsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Analysts</h1>
+        <Link href="/admin/analysts/new"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 
+            rounded-lg text-sm font-medium transition-colors">
+          + New Analyst
+        </Link>
       </div>
       <div className="bg-slate-800 rounded-xl border border-slate-700 
         overflow-hidden">

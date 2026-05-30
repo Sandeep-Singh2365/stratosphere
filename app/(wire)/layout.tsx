@@ -1,4 +1,4 @@
-import { WireHeader } from "@/components/wire/WireHeader";
+import WireHeader from "@/components/wire/WireHeader";
 import { WireFooter } from "@/components/wire/WireFooter";
 
 export const metadata = {

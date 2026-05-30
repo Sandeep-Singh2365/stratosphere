@@ -1,36 +1,211 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stratosphere — Global Intelligence & Policy Analysis Platform
+
+## Overview
+
+Stratosphere is a dual-platform geopolitical intelligence hub designed for policymakers, analysts, and researchers who need timely, rigorous coverage of global affairs. The platform combines fast-paced daily analysis with in-depth policy research under a single unified codebase.
+
+**Stratosphere Wire** is the daily analysis journal — a dark-themed, newsroom-style publication covering breaking geopolitical developments, regional flashpoints, and thematic trends across defense, energy, geoeconomics, and more.
+
+**Stratosphere Institute** is the long-form policy research arm — a scholarly platform for policy briefs, research papers, and fellow profiles, presented in a refined academic aesthetic.
+
+The platform is built with **Next.js 14** (App Router), **Neon PostgreSQL**, **NextAuth** for admin authentication, and **Tailwind CSS** for styling.
+
+## Live Demo
+
+[Stratosphere Wire](#) | [Stratosphere Institute](#) | [Admin Portal](#)
+
+> Update these placeholder links with your deployed URLs.
+
+## Platform Structure
+
+Both Wire and Institute share a single Next.js application, database, and admin panel. Content is distinguished by the `section` field on each article (`wire` or `institute`).
+
+```
+┌─────────────────────────────────────────────────┐
+│              Stratosphere Platform              │
+├─────────────────────┬───────────────────────────┤
+│   Stratosphere Wire │   Stratosphere Institute  │
+│   /wire             │   /institute              │
+│   Daily analysis    │   Policy briefs & papers  │
+│   Regional coverage │   Fellow profiles         │
+│   Expert directory  │   Research publications   │
+├─────────────────────┴───────────────────────────┤
+│         Shared: Admin · Database · Auth         │
+└─────────────────────────────────────────────────┘
+```
+
+## Tech Stack
+
+| Category     | Technology                          |
+|--------------|-------------------------------------|
+| Framework    | Next.js 14 (App Router)             |
+| Database     | Neon PostgreSQL (serverless)        |
+| Auth         | NextAuth v5 (Credentials provider)  |
+| Styling      | Tailwind CSS + shadcn/ui            |
+| Maps         | Leaflet + react-leaflet             |
+| Charts       | Recharts                            |
+| Deployment   | Netlify                             |
+
+## Features
+
+### Wire
+
+- Daily geopolitical analysis articles with markdown rendering
+- Browse by region (Indo-Pacific, Euro-Atlantic, MENA, and more)
+- Browse by topic (Geoeconomics, Defense & Security, Energy Policy, etc.)
+- Expert/analyst profile pages
+- Featured article spotlight on homepage
+- Dark newsroom UI with hover navigation dropdowns
+
+### Institute
+
+- Long-form policy briefs and research papers
+- Fellow and analyst directory
+- Browse publications by research area and region
+- Scholarly serif typography and warm academic aesthetic
+- PDF download support for research papers
+
+### Shared
+
+- Unified admin panel for content management
+- Newsletter subscriber management
+- Region and topic taxonomy shared across both sections
+- Responsive design with mobile navigation
+- SEO-friendly slug-based routing
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 20+
+- npm
+- A [Neon](https://neon.tech) account (free tier works)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/your-org/intel-hub.git
+   cd intel-hub
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+3. **Configure environment variables**
+
+   Copy the example below into a `.env.local` file at the project root:
+
+   ```env
+   DATABASE_URL=postgresql://user:password@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
+   NEXTAUTH_SECRET=your-random-32-char-secret-here
+   NEXTAUTH_URL=http://localhost:3000
+   ADMIN_EMAIL=admin@stratosphere.com
+   ADMIN_PASSWORD=YourSecurePassword123
+   ```
+
+4. **Run database migrations**
+
+   ```bash
+   npm run migrate
+   ```
+
+5. **Seed the database**
+
+   ```bash
+   npm run seed
+   ```
+
+   This creates the default admin user, sample regions, topics, analysts, and articles.
+
+6. **Start the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Environment Variables
+
+| Variable           | Purpose                                      | Example Format                                      |
+|--------------------|----------------------------------------------|-----------------------------------------------------|
+| `DATABASE_URL`     | Neon PostgreSQL connection string            | `postgresql://user:pass@host/db?sslmode=require`    |
+| `NEXTAUTH_SECRET`  | JWT signing secret for admin sessions        | Random 32+ character string                         |
+| `NEXTAUTH_URL`     | Base URL for NextAuth callbacks              | `http://localhost:3000` or your production URL      |
+| `ADMIN_EMAIL`      | Default admin email (used by seed script)    | `admin@stratosphere.com`                            |
+| `ADMIN_PASSWORD`   | Default admin password (used by seed script) | Strong password string                              |
+
+> These are example formats only. Never commit real credentials to version control.
+
+## Database Schema
+
+The platform uses eight PostgreSQL tables:
+
+| Table                    | Purpose                                                        |
+|--------------------------|----------------------------------------------------------------|
+| `users`                  | Admin accounts with hashed passwords                           |
+| `analysts`               | Expert profiles (name, bio, photo, social links)                 |
+| `regions`                | Geographic taxonomy (Indo-Pacific, MENA, etc.)                 |
+| `topics`                 | Thematic taxonomy (Geoeconomics, Defense, etc.)                |
+| `articles`               | All content for Wire and Institute sections                    |
+| `article_regions`        | Many-to-many junction linking articles to regions              |
+| `article_topics`         | Many-to-many junction linking articles to topics               |
+| `newsletter_subscribers` | Email list for newsletter signups                              |
+
+## Admin Panel
+
+Access the admin portal at `/admin/login`.
+
+**Default credentials** (created by the seed script):
+
+- Email: `admin@stratosphere.com`
+- Password: `Admin@1234` (or whatever you set in `ADMIN_PASSWORD`)
+
+> Change the default password immediately after first login in production.
+
+From the admin panel you can:
+
+- Create, edit, publish, and delete articles (Wire and Institute)
+- Toggle featured article status
+- Manage analyst/expert profiles
+- View and manage newsletter subscribers
+- Access the dashboard with content overview
+
+## Deployment
+
+### Netlify
+
+1. Push your repository to GitHub.
+2. Connect the repo in the [Netlify dashboard](https://app.netlify.com).
+3. Set all environment variables from the table above in **Site settings → Environment variables**.
+4. Netlify will auto-deploy on every push to your main branch.
+
+The project includes a pre-configured `netlify.toml` with the Next.js plugin and Node 20.
+
+### Neon Database
+
+- Create a free Neon project and copy the connection string to `DATABASE_URL`.
+- Run `npm run migrate` locally against your production database before the first deploy, or add it as a build step.
+- Run `npm run seed` once to populate initial data.
+
+## Project Structure
+
+```
+app/           Next.js App Router pages, layouts, and server actions
+components/    React components (wire/, institute/, admin/, ui/)
+lib/           Database client, auth, queries, migrations, and seed scripts
+types/         Shared TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions are welcome. Please open an issue to discuss significant changes before submitting a pull request. Follow existing code conventions and ensure the project builds cleanly before opening a PR.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License

@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 const REGIONS = [
   { name: 'Indo-Pacific', slug: 'indo-pacific' },
@@ -19,35 +19,9 @@ const TOPICS = [
   { name: 'Maritime Security', slug: 'maritime-security' },
 ]
 
-export function WireHeader() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<'regions' | 'topics' | null>(null)
-
-  const regionsRef = useRef<HTMLDivElement>(null)
-  const topicsRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        openDropdown === 'regions' && 
-        regionsRef.current && 
-        !regionsRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null)
-      }
-      if (
-        openDropdown === 'topics' && 
-        topicsRef.current && 
-        !topicsRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [openDropdown])
+export default function WireHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
 
   return (
     <header className="bg-wire-bg border-b border-wire-border sticky 
@@ -67,60 +41,92 @@ export function WireHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/wire" className="text-wire-muted hover:text-white text-sm transition-colors">
+          <nav className="hidden md:flex items-center gap-1">
+            <Link href="/wire"
+              className="px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors rounded-lg hover:bg-wire-card">
               Analysis
             </Link>
 
-            {/* Regions Dropdown */}
-            <div className="relative" ref={regionsRef}>
-              <button
-                onClick={() => setOpenDropdown(openDropdown === 'regions' ? null : 'regions')}
-                className="text-wire-muted hover:text-white text-sm transition-colors flex items-center gap-1 focus:outline-none"
-              >
-                Regions <span className="text-[10px]">▼</span>
-              </button>
-              {openDropdown === 'regions' && (
-                <div className="absolute left-0 mt-2 bg-wire-bg border border-wire-border rounded-lg shadow-lg z-50 py-2 min-w-40">
+            {/* Regions dropdown */}
+            <div className="relative"
+              onMouseEnter={() => setHoveredNav('regions')}
+              onMouseLeave={() => setHoveredNav(null)}>
+              <Link href="/wire/regions"
+                className="flex items-center gap-1 px-3 py-2 
+                  text-wire-muted hover:text-white text-sm 
+                  transition-colors rounded-lg hover:bg-wire-card">
+                Regions
+                <svg className="w-3 h-3 opacity-60" fill="none" 
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" 
+                    strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              {hoveredNav === 'regions' && (
+                <div className="absolute top-full left-0 mt-1 w-52 
+                  bg-wire-bg border border-wire-border rounded-xl 
+                  shadow-xl shadow-black/20 py-2 z-50">
                   {REGIONS.map(r => (
-                    <Link
-                      key={r.slug}
+                    <Link key={r.slug}
                       href={`/wire/region/${r.slug}`}
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-wire-muted hover:text-white hover:bg-wire-card transition-colors"
-                    >
+                      className="block px-4 py-2 text-sm text-wire-muted 
+                        hover:text-white hover:bg-wire-card transition-colors">
                       {r.name}
                     </Link>
                   ))}
+                  <div className="border-t border-wire-border mt-2 pt-2">
+                    <Link href="/wire/regions"
+                      className="block px-4 py-2 text-xs text-wire-accent 
+                        hover:bg-wire-card transition-colors">
+                      View all regions →
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Topics Dropdown */}
-            <div className="relative" ref={topicsRef}>
-              <button
-                onClick={() => setOpenDropdown(openDropdown === 'topics' ? null : 'topics')}
-                className="text-wire-muted hover:text-white text-sm transition-colors flex items-center gap-1 focus:outline-none"
-              >
-                Topics <span className="text-[10px]">▼</span>
-              </button>
-              {openDropdown === 'topics' && (
-                <div className="absolute left-0 mt-2 bg-wire-bg border border-wire-border rounded-lg shadow-lg z-50 py-2 min-w-48">
+            {/* Topics dropdown */}
+            <div className="relative"
+              onMouseEnter={() => setHoveredNav('topics')}
+              onMouseLeave={() => setHoveredNav(null)}>
+              <Link href="/wire/topics"
+                className="flex items-center gap-1 px-3 py-2 
+                  text-wire-muted hover:text-white text-sm 
+                  transition-colors rounded-lg hover:bg-wire-card">
+                Topics
+                <svg className="w-3 h-3 opacity-60" fill="none" 
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" 
+                    strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              {hoveredNav === 'topics' && (
+                <div className="absolute top-full left-0 mt-1 w-52 
+                  bg-wire-bg border border-wire-border rounded-xl 
+                  shadow-xl shadow-black/20 py-2 z-50">
                   {TOPICS.map(t => (
-                    <Link
-                      key={t.slug}
+                    <Link key={t.slug}
                       href={`/wire/topic/${t.slug}`}
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-wire-muted hover:text-white hover:bg-wire-card transition-colors"
-                    >
+                      className="block px-4 py-2 text-sm text-wire-muted 
+                        hover:text-white hover:bg-wire-card transition-colors">
                       {t.name}
                     </Link>
                   ))}
+                  <div className="border-t border-wire-border mt-2 pt-2">
+                    <Link href="/wire/topics"
+                      className="block px-4 py-2 text-xs text-wire-accent 
+                        hover:bg-wire-card transition-colors">
+                      View all topics →
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            <Link href="/wire/experts" className="text-wire-muted hover:text-white text-sm transition-colors">
+            <Link href="/wire/experts"
+              className="px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors rounded-lg hover:bg-wire-card">
               Experts
             </Link>
           </nav>
@@ -138,17 +144,15 @@ export function WireHeader() {
                 transition-colors">
               Admin
             </Link>
-            {/* Mobile menu button */}
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden text-wire-muted hover:text-white p-1"
-            >
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden text-wire-muted hover:text-white p-1">
               <svg className="w-5 h-5" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round"
                   strokeWidth={2}
-                  d={menuOpen 
-                    ? "M6 18L18 6M6 6l12 12" 
+                  d={mobileOpen
+                    ? "M6 18L18 6M6 6l12 12"
                     : "M4 6h16M4 12h16M4 18h16"} />
               </svg>
             </button>
@@ -156,28 +160,60 @@ export function WireHeader() {
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
+        {mobileOpen && (
           <div className="md:hidden border-t border-wire-border py-3 
             space-y-1">
-            {[
-              { href: '/wire', label: 'Analysis' },
-              { href: '/wire/regions', label: 'Regions' },
-              { href: '/wire/topics', label: 'Topics' },
-              { href: '/wire/experts', label: 'Experts' },
-              { href: '/institute', label: 'Institute' },
-            ].map(item => (
-              <Link key={item.href} href={item.href}
-                className="block px-2 py-2 text-wire-muted 
-                  hover:text-white text-sm transition-colors"
-                onClick={() => setMenuOpen(false)}>
-                {item.label}
+            <Link href="/wire"
+              className="block px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Analysis
+            </Link>
+            <Link href="/wire/regions"
+              className="block px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Regions
+            </Link>
+            {REGIONS.map(r => (
+              <Link key={r.slug}
+                href={`/wire/region/${r.slug}`}
+                className="block px-6 py-1.5 text-wire-muted hover:text-white 
+                  text-xs transition-colors"
+                onClick={() => setMobileOpen(false)}>
+                · {r.name}
               </Link>
             ))}
+            <Link href="/wire/topics"
+              className="block px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Topics
+            </Link>
+            {TOPICS.map(t => (
+              <Link key={t.slug}
+                href={`/wire/topic/${t.slug}`}
+                className="block px-6 py-1.5 text-wire-muted hover:text-white 
+                  text-xs transition-colors"
+                onClick={() => setMobileOpen(false)}>
+                · {t.name}
+              </Link>
+            ))}
+            <Link href="/wire/experts"
+              className="block px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Experts
+            </Link>
+            <Link href="/institute"
+              className="block px-3 py-2 text-wire-muted hover:text-white 
+                text-sm transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Institute
+            </Link>
           </div>
         )}
       </div>
     </header>
   )
 }
-
-export default WireHeader

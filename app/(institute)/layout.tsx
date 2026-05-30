@@ -1,4 +1,4 @@
-import { InstituteHeader } from "@/components/institute/InstituteHeader";
+import InstituteHeader from "@/components/institute/InstituteHeader";
 import { InstituteFooter } from "@/components/institute/InstituteFooter";
 
 export const metadata = {

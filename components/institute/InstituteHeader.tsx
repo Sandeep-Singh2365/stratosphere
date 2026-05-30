@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 const TOPICS = [
   { name: 'Geoeconomics', slug: 'geoeconomics' },
@@ -11,27 +11,17 @@ const TOPICS = [
   { name: 'Maritime Security', slug: 'maritime-security' },
 ]
 
-export function InstituteHeader() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<'topics' | null>(null)
+const REGIONS = [
+  { name: 'Indo-Pacific', slug: 'indo-pacific' },
+  { name: 'Euro-Atlantic', slug: 'euro-atlantic' },
+  { name: 'MENA', slug: 'mena' },
+  { name: 'Sub-Saharan Africa', slug: 'sub-saharan-africa' },
+  { name: 'Latin America', slug: 'latin-america' },
+]
 
-  const topicsRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        openDropdown === 'topics' && 
-        topicsRef.current && 
-        !topicsRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [openDropdown])
+export default function InstituteHeader() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
 
   return (
     <header className="bg-institute-card border-b border-institute-border 
@@ -52,41 +42,97 @@ export function InstituteHeader() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/institute" className="text-institute-muted hover:text-institute-text text-sm transition-colors font-serif">
+          <nav className="hidden md:flex items-center gap-1">
+            <Link href="/institute"
+              className="px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm transition-colors 
+                rounded-lg hover:bg-stone-50 font-serif">
               Research
             </Link>
 
-            {/* Research Areas Dropdown */}
-            <div className="relative" ref={topicsRef}>
-              <button
-                onClick={() => setOpenDropdown(openDropdown === 'topics' ? null : 'topics')}
-                className="text-institute-muted hover:text-institute-text text-sm transition-colors font-serif flex items-center gap-1 focus:outline-none"
-              >
-                Research Areas <span className="text-[10px]">▼</span>
-              </button>
-              {openDropdown === 'topics' && (
-                <div className="absolute left-0 mt-2 bg-institute-card border border-institute-border rounded-lg shadow-lg z-50 py-2 min-w-48">
+            {/* Research Areas dropdown */}
+            <div className="relative"
+              onMouseEnter={() => setHoveredNav('topics')}
+              onMouseLeave={() => setHoveredNav(null)}>
+              <Link href="/institute/briefs"
+                className="flex items-center gap-1 px-3 py-2 
+                  text-institute-muted hover:text-institute-text text-sm 
+                  transition-colors rounded-lg hover:bg-stone-50 font-serif">
+                Research Areas
+                <svg className="w-3 h-3 opacity-60" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              {hoveredNav === 'topics' && (
+                <div className="absolute top-full left-0 mt-1 w-56 
+                  bg-institute-card border border-institute-border 
+                  rounded-xl shadow-lg py-2 z-50">
                   {TOPICS.map(t => (
-                    <Link
-                      key={t.slug}
+                    <Link key={t.slug}
                       href={`/institute/topic/${t.slug}`}
-                      onClick={() => setOpenDropdown(null)}
-                      className="block px-4 py-2 text-sm text-institute-muted hover:text-institute-text hover:bg-stone-100 transition-colors font-serif"
-                    >
+                      className="block px-4 py-2 text-sm 
+                        text-institute-muted hover:text-institute-text 
+                        hover:bg-stone-50 transition-colors font-serif">
                       {t.name}
+                    </Link>
+                  ))}
+                  <div className="border-t border-institute-border mt-2 pt-2">
+                    <Link href="/institute/briefs"
+                      className="block px-4 py-2 text-xs 
+                        text-institute-accent hover:bg-stone-50 
+                        transition-colors font-serif">
+                      All publications →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Regions dropdown */}
+            <div className="relative"
+              onMouseEnter={() => setHoveredNav('regions')}
+              onMouseLeave={() => setHoveredNav(null)}>
+              <Link href="/institute/briefs"
+                className="flex items-center gap-1 px-3 py-2 
+                  text-institute-muted hover:text-institute-text text-sm 
+                  transition-colors rounded-lg hover:bg-stone-50 font-serif">
+                Regions
+                <svg className="w-3 h-3 opacity-60" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              {hoveredNav === 'regions' && (
+                <div className="absolute top-full left-0 mt-1 w-52 
+                  bg-institute-card border border-institute-border 
+                  rounded-xl shadow-lg py-2 z-50">
+                  {REGIONS.map(r => (
+                    <Link key={r.slug}
+                      href={`/institute/region/${r.slug}`}
+                      className="block px-4 py-2 text-sm 
+                        text-institute-muted hover:text-institute-text 
+                        hover:bg-stone-50 transition-colors font-serif">
+                      {r.name}
                     </Link>
                   ))}
                 </div>
               )}
             </div>
 
-            <Link href="/institute/briefs" className="text-institute-muted hover:text-institute-text text-sm transition-colors font-serif">
-              Publications
-            </Link>
-
-            <Link href="/institute/fellows" className="text-institute-muted hover:text-institute-text text-sm transition-colors font-serif">
+            <Link href="/institute/fellows"
+              className="px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm transition-colors 
+                rounded-lg hover:bg-stone-50 font-serif">
               Fellows
+            </Link>
+            <Link href="/institute/briefs"
+              className="px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm transition-colors 
+                rounded-lg hover:bg-stone-50 font-serif">
+              Publications
             </Link>
           </nav>
 
@@ -105,16 +151,15 @@ export function InstituteHeader() {
               Admin
             </Link>
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden text-institute-muted 
-                hover:text-institute-text p-1"
-            >
+                hover:text-institute-text p-1">
               <svg className="w-5 h-5" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round"
                   strokeWidth={2}
-                  d={menuOpen 
-                    ? "M6 18L18 6M6 6l12 12" 
+                  d={mobileOpen
+                    ? "M6 18L18 6M6 6l12 12"
                     : "M4 6h16M4 12h16M4 18h16"} />
               </svg>
             </button>
@@ -122,28 +167,51 @@ export function InstituteHeader() {
         </div>
 
         {/* Mobile menu */}
-        {menuOpen && (
+        {mobileOpen && (
           <div className="md:hidden border-t border-institute-border 
             py-3 space-y-1">
-            {[
-              { href: '/institute', label: 'Research' },
-              { href: '/institute/briefs', label: 'Publications' },
-              { href: '/institute/fellows', label: 'Fellows' },
-              { href: '/wire', label: 'Wire' },
-            ].map(item => (
-              <Link key={item.href} href={item.href}
-                className="block px-2 py-2 text-institute-muted 
-                  hover:text-institute-text text-sm font-serif 
-                  transition-colors"
-                onClick={() => setMenuOpen(false)}>
-                {item.label}
+            <Link href="/institute"
+              className="block px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm font-serif transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Research
+            </Link>
+            <Link href="/institute/briefs"
+              className="block px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm font-serif transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Research Areas
+            </Link>
+            {TOPICS.map(t => (
+              <Link key={t.slug}
+                href={`/institute/topic/${t.slug}`}
+                className="block px-6 py-1.5 text-institute-muted 
+                  hover:text-institute-text text-xs font-serif transition-colors"
+                onClick={() => setMobileOpen(false)}>
+                · {t.name}
               </Link>
             ))}
+            <Link href="/institute/fellows"
+              className="block px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm font-serif transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Fellows
+            </Link>
+            <Link href="/institute/briefs"
+              className="block px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm font-serif transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Publications
+            </Link>
+            <Link href="/wire"
+              className="block px-3 py-2 text-institute-muted 
+                hover:text-institute-text text-sm font-serif transition-colors"
+              onClick={() => setMobileOpen(false)}>
+              Wire
+            </Link>
           </div>
         )}
       </div>
     </header>
   )
 }
-
-export default InstituteHeader
