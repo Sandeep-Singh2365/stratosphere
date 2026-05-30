@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { sql } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { User } from "@/types";
 
@@ -21,6 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials.password as string;
 
         // Query the users table in Neon via sql from lib/db.ts
+        const sql = getDb();
         const users = await sql`SELECT * FROM users WHERE email = ${email}`;
         if (!users || users.length === 0) {
           return null;

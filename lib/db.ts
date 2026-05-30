@@ -12,3 +12,6 @@ export function getDb() {
   }
   return dbClient;
 }
+
+// Export sql for backward compatibility with lib/auth.ts
+export const sql = getDb();
