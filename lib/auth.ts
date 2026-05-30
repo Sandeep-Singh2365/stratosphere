@@ -22,7 +22,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Query the users table in Neon via sql from lib/db.ts
         const sql = getDb();
-        const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+        const usersResult = await sql`SELECT * FROM users WHERE email = ${email}`;
+
+        // Normalize to an array of rows
+        const users = Array.isArray(usersResult)
+          ? usersResult
+          : 'rows' in (usersResult as any)
+            ? (usersResult as any).rows
+            : [];
+
         if (!users || users.length === 0) {
           return null;
         }
