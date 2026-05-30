@@ -93,9 +93,13 @@ async function seed() {
     console.log("Analysts seeded.");
 
     // Step 5: Fetch lookup IDs
-    const dbRegions = await sql`SELECT id, slug FROM regions`;
-    const dbTopics = await sql`SELECT id, slug FROM topics`;
-    const dbAnalysts = await sql`SELECT id, slug FROM analysts`;
+    const dbRegionsResult = await sql`SELECT id, slug FROM regions`;
+    const dbTopicsResult = await sql`SELECT id, slug FROM topics`;
+    const dbAnalystsResult = await sql`SELECT id, slug FROM analysts`;
+
+    const dbRegions = Array.isArray(dbRegionsResult) ? dbRegionsResult : 'rows' in (dbRegionsResult as any) ? (dbRegionsResult as any).rows : [];
+    const dbTopics = Array.isArray(dbTopicsResult) ? dbTopicsResult : 'rows' in (dbTopicsResult as any) ? (dbTopicsResult as any).rows : [];
+    const dbAnalysts = Array.isArray(dbAnalystsResult) ? dbAnalystsResult : 'rows' in (dbAnalystsResult as any) ? (dbAnalystsResult as any).rows : [];
 
     const regionMap = new Map<string, string>();
     dbRegions.forEach((row: any) => regionMap.set(row.slug, row.id));
@@ -342,7 +346,8 @@ Ultimately, the long-term benefit of Africa's mineral wealth will depend on the 
     console.log("Articles seeded.");
 
     // Step 6b: Populate Junctions
-    const dbArticles = await sql`SELECT id, slug FROM articles`;
+    const dbArticlesResult = await sql`SELECT id, slug FROM articles`;
+    const dbArticles = Array.isArray(dbArticlesResult) ? dbArticlesResult : 'rows' in (dbArticlesResult as any) ? (dbArticlesResult as any).rows : [];
     const articleMap = new Map<string, string>();
     dbArticles.forEach((row: any) => articleMap.set(row.slug, row.id));
 
@@ -383,14 +388,22 @@ Ultimately, the long-term benefit of Africa's mineral wealth will depend on the 
     const analystsCountRes = await sql`SELECT COUNT(*)::integer as count FROM analysts`;
     const wireArticlesCountRes = await sql`SELECT COUNT(*)::integer as count FROM articles WHERE section = 'wire'`;
     const instArticlesCountRes = await sql`SELECT COUNT(*)::integer as count FROM articles WHERE section = 'institute'`;
-    const totalArticlesCount = (wireArticlesCountRes[0]?.count || 0) + (instArticlesCountRes[0]?.count || 0);
+    
+    const usersCount = Array.isArray(usersCountRes) ? usersCountRes : 'rows' in (usersCountRes as any) ? (usersCountRes as any).rows : [];
+    const regionsCount = Array.isArray(regionsCountRes) ? regionsCountRes : 'rows' in (regionsCountRes as any) ? (regionsCountRes as any).rows : [];
+    const topicsCount = Array.isArray(topicsCountRes) ? topicsCountRes : 'rows' in (topicsCountRes as any) ? (topicsCountRes as any).rows : [];
+    const analystsCount = Array.isArray(analystsCountRes) ? analystsCountRes : 'rows' in (analystsCountRes as any) ? (analystsCountRes as any).rows : [];
+    const wireArticlesCount = Array.isArray(wireArticlesCountRes) ? wireArticlesCountRes : 'rows' in (wireArticlesCountRes as any) ? (wireArticlesCountRes as any).rows : [];
+    const instArticlesCount = Array.isArray(instArticlesCountRes) ? instArticlesCountRes : 'rows' in (instArticlesCountRes as any) ? (instArticlesCountRes as any).rows : [];
+    
+    const totalArticlesCount = (wireArticlesCount[0]?.count || 0) + (instArticlesCount[0]?.count || 0);
 
     console.log("Seed complete:");
-    console.log(`  Users: ${usersCountRes[0]?.count || 0}`);
-    console.log(`  Regions: ${regionsCountRes[0]?.count || 0}`);
-    console.log(`  Topics: ${topicsCountRes[0]?.count || 0}`);
-    console.log(`  Analysts: ${analystsCountRes[0]?.count || 0}`);
-    console.log(`  Articles: ${totalArticlesCount} (wire: ${wireArticlesCountRes[0]?.count || 0}, institute: ${instArticlesCountRes[0]?.count || 0})`);
+    console.log(`  Users: ${usersCount[0]?.count || 0}`);
+    console.log(`  Regions: ${regionsCount[0]?.count || 0}`);
+    console.log(`  Topics: ${topicsCount[0]?.count || 0}`);
+    console.log(`  Analysts: ${analystsCount[0]?.count || 0}`);
+    console.log(`  Articles: ${totalArticlesCount} (wire: ${wireArticlesCount[0]?.count || 0}, institute: ${instArticlesCount[0]?.count || 0})`);
 
   } catch (error) {
     console.error("Seeding failed:", error);
