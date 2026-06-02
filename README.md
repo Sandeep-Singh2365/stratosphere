@@ -86,8 +86,8 @@ Both Wire and Institute share a single Next.js application, database, and admin 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-org/intel-hub.git
-   cd intel-hub
+   git clone https://github.com/your-org/stratosphere.git
+   cd stratosphere
    ```
 
 2. **Install dependencies**
