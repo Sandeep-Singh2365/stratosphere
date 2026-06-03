@@ -4,8 +4,22 @@ import { getDb } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { User } from "@/types";
 import { sanitizeEmail } from "@/lib/sanitize";
+import { normalizeRows } from "@/lib/queries/normalize";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  /**
+   * Auth.js (NextAuth v5) requires an explicit trusted host when deployed behind proxies/CDNs
+   * (Netlify, Vercel preview URLs, etc). Without this, production can throw UntrustedHost.
+   *
+   * Prefer setting env vars:
+   * - AUTH_TRUST_HOST=true
+   * - AUTH_URL=https://your-domain
+   */
+  trustHost:
+    process.env.NODE_ENV === "development" ||
+    process.env.AUTH_TRUST_HOST === "true" ||
+    process.env.NETLIFY === "true",
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
       name: "Credentials",
@@ -25,18 +39,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const sql = getDb();
         const usersResult = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
 
-        // Normalize to an array of rows
-        const users = Array.isArray(usersResult)
-          ? usersResult
-          : 'rows' in (usersResult as any)
-            ? (usersResult as any).rows
-            : [];
+        const users = normalizeRows<User & { password_hash?: string; password?: string }>(usersResult)
 
         if (!users || users.length === 0) {
           return null;
         }
 
-        const user = users[0] as User & { password_hash?: string; password?: string };
+        const user = users[0];
         const hash = user.password_hash || user.password;
 
         if (!hash) {
