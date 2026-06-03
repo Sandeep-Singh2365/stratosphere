@@ -1,29 +1,48 @@
 import { getDb } from '@/lib/db';
 import { Analyst } from '@/types';
+import { normalizeRows } from '@/lib/queries/normalize'
 
-export async function getAllAnalysts(): Promise<Analyst[]> {
+export type AnalystSection = 'wire' | 'institute'
+
+export async function getAllAnalysts(section?: AnalystSection): Promise<Analyst[]> {
   const sql = getDb();
+  const sectionValue: AnalystSection | null = section ?? null
   const result = await sql`
-    SELECT analysts.*, COUNT(articles.id)::integer as article_count 
+    SELECT
+      analysts.*,
+      COUNT(articles.id) FILTER (
+        WHERE
+          articles.is_published = true
+          AND (${sectionValue}::text IS NULL OR articles.section = ${sectionValue})
+      )::integer as article_count
     FROM analysts 
-    LEFT JOIN articles ON articles.analyst_id = analysts.id AND articles.is_published = true 
+    LEFT JOIN articles ON articles.analyst_id = analysts.id
     GROUP BY analysts.id 
     ORDER BY analysts.name
   `;
-  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
-  return rows as Analyst[];
+  return normalizeRows<Analyst>(result)
 }
 
-export async function getAnalystBySlug(slug: string): Promise<Analyst | null> {
+export async function getAnalystBySlug(
+  slug: string,
+  section?: AnalystSection
+): Promise<Analyst | null> {
   const sql = getDb();
+  const sectionValue: AnalystSection | null = section ?? null
   const result = await sql`
-    SELECT analysts.*, COUNT(articles.id)::integer as article_count 
+    SELECT
+      analysts.*,
+      COUNT(articles.id) FILTER (
+        WHERE
+          articles.is_published = true
+          AND (${sectionValue}::text IS NULL OR articles.section = ${sectionValue})
+      )::integer as article_count
     FROM analysts 
-    LEFT JOIN articles ON articles.analyst_id = analysts.id 
+    LEFT JOIN articles ON articles.analyst_id = analysts.id
     WHERE analysts.slug = ${slug} 
     GROUP BY analysts.id
   `;
-  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
+  const rows = normalizeRows<Analyst>(result)
   if (rows.length === 0) return null;
-  return rows[0] as Analyst;
+  return rows[0] ?? null
 }

@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/db';
 import { Region, Topic } from '@/types';
+import { normalizeRows } from '@/lib/queries/normalize'
 
 export async function getAllRegions(): Promise<Region[]> {
   const sql = getDb();
@@ -10,8 +11,7 @@ export async function getAllRegions(): Promise<Region[]> {
     GROUP BY regions.id 
     ORDER BY regions.name
   `;
-  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
-  return rows as Region[];
+  return normalizeRows<Region>(result)
 }
 
 export async function getAllTopics(): Promise<Topic[]> {
@@ -23,6 +23,5 @@ export async function getAllTopics(): Promise<Topic[]> {
     GROUP BY topics.id 
     ORDER BY topics.name
   `;
-  const rows = Array.isArray(result) ? result : 'rows' in (result as any) ? (result as any).rows : [];
-  return rows as Topic[];
+  return normalizeRows<Topic>(result)
 }

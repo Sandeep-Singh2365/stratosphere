@@ -30,7 +30,7 @@ export default async function WireHomePage({
     getFeaturedArticles('wire'),
     getAllRegions(),
     getAllTopics(),
-    getAllAnalysts(),
+    getAllAnalysts('wire'),
   ])
 
   const regionChartData = regions.map(r => ({

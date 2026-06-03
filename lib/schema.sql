@@ -53,8 +53,29 @@ CREATE TABLE IF NOT EXISTS articles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   read_time INTEGER,
-  pdf_url TEXT
+  pdf_url TEXT,
+  -- Content matrix: What-if / How / Why
+  framework TEXT CHECK (framework IN ('what_if', 'how', 'why')),
+  -- Language + translation model
+  language TEXT NOT NULL DEFAULT 'en',
+  -- If set, this row is a translation of another article (the "original").
+  original_article_id UUID REFERENCES articles(id) ON DELETE SET NULL
 );
+
+-- Backfill / forward-migration helpers for existing databases
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS framework TEXT CHECK (framework IN ('what_if', 'how', 'why'));
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'en';
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS original_article_id UUID REFERENCES articles(id) ON DELETE SET NULL;
+
+-- Translation uniqueness: only one translation per (original_article_id, language)
+-- (English originals typically have original_article_id NULL and language='en')
+CREATE UNIQUE INDEX IF NOT EXISTS idx_articles_translation_unique
+  ON articles(original_article_id, language)
+  WHERE original_article_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_articles_section_language ON articles(section, language);
+CREATE INDEX IF NOT EXISTS idx_articles_framework ON articles(framework);
+CREATE INDEX IF NOT EXISTS idx_articles_original_article ON articles(original_article_id);
 
 -- Junction: article_regions
 CREATE TABLE IF NOT EXISTS article_regions (

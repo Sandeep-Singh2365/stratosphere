@@ -25,6 +25,7 @@ export default async function EditArticlePage({
       <h1 className="text-2xl font-bold text-white mb-6">Edit Article</h1>
       <ArticleForm
         article={article}
+        allArticles={articles}
         analysts={analysts}
         regions={regions}
         topics={topics}

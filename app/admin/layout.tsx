@@ -9,9 +9,12 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const session = await auth()
-  if (!session) {
-    return <>{children}</>
-  }
+  if (!session) redirect('/admin/login')
+
+  // Defense-in-depth: even if middleware is bypassed/misconfigured,
+  // never render the admin shell unless the user is an admin.
+  const role = (session.user as any)?.role
+  if (role !== 'admin') redirect('/admin/login?error=unauthorized')
 
   return (
     <div className="min-h-screen bg-slate-900 flex">
@@ -33,6 +36,7 @@ export default async function AdminLayout({
             { href: '/admin/analysts', label: 'Analysts' },
             { href: '/admin/analysts/new', label: 'New Analyst' },
             { href: '/admin/subscribers', label: 'Subscribers' },
+            { href: '/admin/profile', label: 'Profile' },
           ].map(item => (
             <Link
               key={item.href}

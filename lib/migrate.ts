@@ -1,12 +1,14 @@
-import { loadEnvConfig } from '@next/env';
-loadEnvConfig(process.cwd());
-
-import * as fs from 'fs';
-import * as path from 'path';
-import { sql } from './db';
+import { loadEnvConfig } from '@next/env'
+import * as fs from 'fs'
+import * as path from 'path'
+import { getDb } from './db'
 
 async function migrate() {
   try {
+    // Load .env.local / .env.* before initializing the DB client
+    loadEnvConfig(process.cwd())
+    const sql = getDb()
+
     const schemaPath = path.join(process.cwd(), 'lib', 'schema.sql');
     const sqlContent = fs.readFileSync(schemaPath, 'utf8');
 

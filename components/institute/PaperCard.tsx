@@ -20,6 +20,7 @@ const contentTypeLabels: Record<string, string> = {
 export default function PaperCard({ article, variant }: PaperCardProps) {
   const typeLabel = contentTypeLabels[article.content_type ?? ''] 
     ?? article.content_type ?? 'Publication'
+  const isInternalPdf = !!article.pdf_url && article.pdf_url.startsWith('/papers/')
 
   if (variant === 'featured') {
     return (
@@ -79,13 +80,14 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
               {article.read_time} min read
             </span>
           </div>
-          {article.pdf_url && !article.pdf_url.startsWith('/papers/') && (
+          {article.pdf_url && (
             <a
               href={article.pdf_url}
               className="text-xs text-institute-accent hover:underline 
                 font-medium flex items-center gap-1"
               target="_blank"
               rel="noopener noreferrer"
+              {...(isInternalPdf ? { download: '' } : {})}
             >
               ↓ PDF
             </a>
@@ -112,7 +114,10 @@ export default function PaperCard({ article, variant }: PaperCardProps) {
             <a href={article.pdf_url}
               className="text-xs text-institute-accent hover:underline 
                 mt-1 inline-block"
-              target="_blank" rel="noopener noreferrer">
+              target="_blank"
+              rel="noopener noreferrer"
+              {...(isInternalPdf ? { download: '' } : {})}
+            >
               ↓ PDF
             </a>
           )}

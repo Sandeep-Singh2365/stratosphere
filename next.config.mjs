@@ -6,7 +6,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'plus.unsplash.com' },
       { protocol: 'https', hostname: 'source.unsplash.com' },
-      { protocol: 'https', hostname: '**' },
+      // Common safe avatar/CDN hosts (explicit allow-list; no wildcards)
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'secure.gravatar.com' },
     ],
     unoptimized: false,
   },

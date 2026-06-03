@@ -51,6 +51,9 @@ export interface Article {
   updated_at: string;
   read_time: number;
   pdf_url?: string;
+  framework?: 'what_if' | 'how' | 'why';
+  language: string;
+  original_article_id?: string | null;
 }
 
 export interface ArticleWithMeta extends Article {

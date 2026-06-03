@@ -1,32 +1,57 @@
 'use client'
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { signIn, useSession } from 'next-auth/react'
+import type { SignInResponse } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-export default function LoginPage() {
+export const dynamic = 'force-dynamic'
+
+function LoginInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { status } = useSession()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // If already authenticated, don't let the user sit on /admin/login.
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.replace('/admin')
+    }
+  }, [status, router])
+
+  useEffect(() => {
+    const err = searchParams.get('error')
+    if (err === 'unauthorized') {
+      setError('You are not authorized to access the admin area')
+    }
+  }, [searchParams])
+
   const handleSubmit = async () => {
     setLoading(true)
     setError('')
+
     const result = await signIn('credentials', {
       email,
       password,
       redirect: false,
-    })
+      // NextAuth v5 supports redirectTo; harmless on older versions.
+      redirectTo: '/admin',
+    } as any) as SignInResponse | undefined
+
     setLoading(false)
     if (result?.error) {
       setError('Invalid email or password')
-    } else {
-      router.push('/admin')
-      router.refresh()
+      return
     }
+
+    router.push('/admin')
+    router.refresh()
   }
 
   return (
@@ -85,5 +110,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-900" />}>
+      <LoginInner />
+    </Suspense>
   )
 }

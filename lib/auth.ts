@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { getDb } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { User } from "@/types";
+import { sanitizeEmail } from "@/lib/sanitize";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -17,12 +18,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        const email = credentials.email as string;
+        const email = sanitizeEmail(credentials.email as string);
         const password = credentials.password as string;
 
         // Query the users table in Neon via sql from lib/db.ts
         const sql = getDb();
-        const usersResult = await sql`SELECT * FROM users WHERE email = ${email}`;
+        const usersResult = await sql`SELECT * FROM users WHERE email = ${email} LIMIT 1`;
 
         // Normalize to an array of rows
         const users = Array.isArray(usersResult)
@@ -44,6 +45,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const isValid = await bcrypt.compare(password, hash);
         if (!isValid) {
+          return null;
+        }
+
+        // Hard gate: only admin users can authenticate into the admin area.
+        // (If you later add non-admin users for public features, they must NOT
+        // be able to sign in via this Credentials provider.)
+        if (user.role !== "admin") {
           return null;
         }
 
@@ -74,11 +82,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
-      const isAdminRoute = nextUrl.pathname.startsWith('/admin')
-      const isLoginPage = nextUrl.pathname === '/admin/login'
-      if (isAdminRoute && !isLoginPage && !isLoggedIn) return false
-      return true
+      const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+      const isLoginPage = nextUrl.pathname === "/admin/login";
+
+      if (!isAdminRoute || isLoginPage) return true;
+
+      const isLoggedIn = !!auth?.user;
+      if (!isLoggedIn) return false;
+
+      const role = (auth?.user as any)?.role;
+      return role === "admin";
     },
   },
   pages: {

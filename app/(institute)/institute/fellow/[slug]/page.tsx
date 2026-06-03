@@ -11,7 +11,7 @@ export default async function FellowPage({
   params: { slug: string } 
 }) {
   const [analyst, articles] = await Promise.all([
-    getAnalystBySlug(params.slug),
+    getAnalystBySlug(params.slug, 'institute'),
     getArticlesByAnalyst(params.slug),
   ])
 

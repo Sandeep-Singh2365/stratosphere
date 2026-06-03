@@ -13,5 +13,13 @@ export function getDb() {
   return dbClient;
 }
 
-// Export sql for backward compatibility with lib/auth.ts
-export const sql = getDb();
+/**
+ * IMPORTANT:
+ * Do NOT eagerly call getDb() at module import time.
+ *
+ * Our migration/seed scripts load env vars at runtime (via @next/env),
+ * and ESM import hoisting can cause this module to be evaluated before
+ * env loading runs, resulting in "DATABASE_URL environment variable is not set".
+ *
+ * Always call `getDb()` inside the runtime code path that needs it.
+ */

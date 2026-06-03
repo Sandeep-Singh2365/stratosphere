@@ -5,15 +5,31 @@ import { useState } from 'react'
 export default function LandingPage() {
   const [hovered, setHovered] = useState<'wire' | 'institute' | null>(null)
 
+  const wireFlex =
+    hovered === 'wire'
+      ? 'md:flex-[3]'
+      : hovered === 'institute'
+        ? 'md:flex-[2]'
+        : 'md:flex-1'
+
+  const instituteFlex =
+    hovered === 'institute'
+      ? 'md:flex-[3]'
+      : hovered === 'wire'
+        ? 'md:flex-[2]'
+        : 'md:flex-1'
+
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex flex-col md:flex-row min-h-screen md:h-screen overflow-auto md:overflow-hidden">
       {/* Wire half */}
       <div
-        className="relative flex flex-col items-center justify-center 
-          cursor-pointer transition-all duration-500 ease-in-out"
+        className={[
+          'relative flex flex-col items-center justify-center flex-1',
+          'cursor-pointer transition-all duration-500 ease-in-out',
+          'py-16 md:py-0',
+          wireFlex,
+        ].join(' ')}
         style={{
-          flexBasis: hovered === 'wire' ? '60%' 
-            : hovered === 'institute' ? '40%' : '50%',
           background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
         }}
         onMouseEnter={() => setHovered('wire')}
@@ -24,7 +40,7 @@ export default function LandingPage() {
             font-semibold mb-4">
             Daily Intelligence
           </p>
-          <h1 className="text-white font-bold text-4xl md:text-5xl 
+          <h1 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl 
             tracking-wide uppercase mb-2">
             Stratosphere
           </h1>
@@ -45,18 +61,20 @@ export default function LandingPage() {
             Enter Wire →
           </Link>
         </div>
-        {/* Vertical divider line */}
-        <div className="absolute right-0 top-0 h-full w-px 
-          bg-slate-600 opacity-50" />
+        {/* Divider line */}
+        <div className="hidden md:block absolute right-0 top-0 h-full w-px bg-slate-600 opacity-50" />
+        <div className="md:hidden absolute bottom-0 left-0 w-full h-px bg-slate-600/50" />
       </div>
 
       {/* Institute half */}
       <div
-        className="relative flex flex-col items-center justify-center 
-          cursor-pointer transition-all duration-500 ease-in-out"
+        className={[
+          'relative flex flex-col items-center justify-center flex-1',
+          'cursor-pointer transition-all duration-500 ease-in-out',
+          'py-16 md:py-0',
+          instituteFlex,
+        ].join(' ')}
         style={{
-          flexBasis: hovered === 'institute' ? '60%' 
-            : hovered === 'wire' ? '40%' : '50%',
           background: 'linear-gradient(135deg, #fafaf9 0%, #f5f0eb 100%)',
         }}
         onMouseEnter={() => setHovered('institute')}
@@ -68,7 +86,7 @@ export default function LandingPage() {
             Strategic Research
           </p>
           <h1 className="text-stone-900 font-serif font-bold 
-            text-4xl md:text-5xl tracking-wide uppercase mb-2">
+            text-3xl sm:text-4xl md:text-5xl tracking-wide uppercase mb-2">
             Stratosphere
           </h1>
           <p className="text-amber-800 font-serif font-medium text-xl 

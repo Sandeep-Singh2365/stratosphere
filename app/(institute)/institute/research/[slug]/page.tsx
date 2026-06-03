@@ -1,4 +1,4 @@
-import { getArticleBySlug } from '@/lib/queries'
+import { getArticleBySlugLocalized } from '@/lib/queries'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
@@ -17,11 +17,14 @@ const contentTypeLabels: Record<string, string> = {
 }
 
 export default async function ResearchPage({ 
-  params 
+  params,
+  searchParams,
 }: { 
-  params: { slug: string } 
+  params: { slug: string }
+  searchParams?: { lang?: string }
 }) {
-  const article = await getArticleBySlug(params.slug)
+  const lang = searchParams?.lang ?? 'en'
+  const article = await getArticleBySlugLocalized(params.slug, lang)
   if (!article) notFound()
 
   const htmlContent = await marked.parse(article.content || '')

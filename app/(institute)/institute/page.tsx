@@ -22,7 +22,7 @@ export default async function InstituteHomePage() {
   const [featured, papers, analysts, topics, regions] = await Promise.all([
     getFeaturedArticles('institute'),
     getArticlesBySection('institute', 20),
-    getAllAnalysts(),
+    getAllAnalysts('institute'),
     getAllTopics(),
     getAllRegions(),
   ])

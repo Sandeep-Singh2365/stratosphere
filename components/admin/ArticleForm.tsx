@@ -11,6 +11,7 @@ interface ArticleFormProps {
   analysts: Analyst[]
   regions: Region[]
   topics: Topic[]
+  allArticles?: ArticleWithMeta[]
 }
 
 function slugify(text: string) {
@@ -23,7 +24,7 @@ function slugify(text: string) {
 }
 
 export default function ArticleForm({ 
-  article, analysts, regions, topics 
+  article, analysts, regions, topics, allArticles = []
 }: ArticleFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -42,6 +43,13 @@ export default function ArticleForm({
   const [content, setContent] = useState(article?.content ?? '')
   const [coverImage, setCoverImage] = useState(article?.cover_image ?? '')
   const [pdfUrl, setPdfUrl] = useState(article?.pdf_url ?? '')
+  const [framework, setFramework] = useState<
+    '' | 'what_if' | 'how' | 'why'
+  >(article?.framework ?? '')
+  const [language, setLanguage] = useState(article?.language ?? 'en')
+  const [originalArticleId, setOriginalArticleId] = useState(
+    article?.original_article_id ?? ''
+  )
   const [analystId, setAnalystId] = useState(article?.analyst_id ?? '')
   const [readTime, setReadTime] = useState(article?.read_time ?? 5)
   const [isFeatured, setIsFeatured] = useState(article?.is_featured ?? false)
@@ -80,6 +88,9 @@ export default function ArticleForm({
         title, slug, section, content_type: contentType,
         abstract, content, cover_image: coverImage,
         pdf_url: pdfUrl || undefined,
+        framework: framework || null,
+        language,
+        original_article_id: originalArticleId || null,
         analyst_id: analystId || undefined,
         read_time: readTime, is_featured: isFeatured,
         is_published: isPublished,
@@ -94,14 +105,20 @@ export default function ArticleForm({
         setSuccess('Article created successfully.')
         router.push('/admin/articles')
       }
-    } catch (e: any) {
-      setError(e.message ?? 'An error occurred.')
+    } catch (e: unknown) {
+      const msg =
+        typeof e === 'object' && e !== null && 'message' in e
+          ? String((e as Record<string, unknown>).message ?? 'An error occurred.')
+          : 'An error occurred.'
+      setError(msg)
     }
     setLoading(false)
   }
 
   const fieldClass = "bg-slate-900 border-slate-600 text-white placeholder:text-slate-500 focus:border-blue-500"
   const labelClass = "text-slate-300 text-sm font-medium block mb-1"
+  const selectClass =
+    "w-full bg-slate-900 border border-slate-600 text-white rounded-md px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -126,9 +143,7 @@ export default function ArticleForm({
           <label className={labelClass}>Section</label>
           <select value={section}
             onChange={e => setSection(e.target.value as 'wire' | 'institute')}
-            className="w-full bg-slate-900 border border-slate-600 
-              text-white rounded-md px-3 py-2 text-sm 
-              focus:outline-none focus:border-blue-500">
+            className={selectClass}>
             <option value="wire">Wire</option>
             <option value="institute">Institute</option>
           </select>
@@ -137,9 +152,7 @@ export default function ArticleForm({
           <label className={labelClass}>Content Type</label>
           <select value={contentType}
             onChange={e => setContentType(e.target.value as 'analysis' | 'brief' | 'paper' | 'report' | 'interview')}
-            className="w-full bg-slate-900 border border-slate-600 
-              text-white rounded-md px-3 py-2 text-sm 
-              focus:outline-none focus:border-blue-500">
+            className={selectClass}>
             <option value="analysis">Analysis</option>
             <option value="brief">Brief</option>
             <option value="paper">Paper</option>
@@ -147,6 +160,63 @@ export default function ArticleForm({
             <option value="interview">Interview</option>
           </select>
         </div>
+      </div>
+
+      {/* Framework + Language */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={labelClass}>Framework</label>
+          <select
+            value={framework}
+            onChange={(e) => setFramework(e.target.value as '' | 'what_if' | 'how' | 'why')}
+            className={selectClass}
+          >
+            <option value="">— None —</option>
+            <option value="what_if">What-if</option>
+            <option value="how">How</option>
+            <option value="why">Why</option>
+          </select>
+        </div>
+        <div>
+          <label className={labelClass}>Language</label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className={selectClass}
+          >
+            <option value="en">English (en)</option>
+            <option value="es">Spanish (es)</option>
+            <option value="fr">French (fr)</option>
+            <option value="de">German (de)</option>
+            <option value="ar">Arabic (ar)</option>
+            <option value="hi">Hindi (hi)</option>
+            <option value="zh">Chinese (zh)</option>
+            <option value="ru">Russian (ru)</option>
+            <option value="pt">Portuguese (pt)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Translation mapping */}
+      <div>
+        <label className={labelClass}>Original Article (for translations)</label>
+        <select
+          value={originalArticleId ?? ''}
+          onChange={(e) => setOriginalArticleId(e.target.value)}
+          className={selectClass}
+        >
+          <option value="">— None —</option>
+          {allArticles
+            .filter((a) => a.id !== article?.id)
+            .map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.title}{a.language ? ` (${a.language})` : ''}
+              </option>
+            ))}
+        </select>
+        <p className="text-slate-500 text-xs mt-1">
+          Set this when this article is a translation of an existing one.
+        </p>
       </div>
 
       {/* Abstract */}
@@ -196,9 +266,7 @@ export default function ArticleForm({
         <label className={labelClass}>Author / Analyst</label>
         <select value={analystId}
           onChange={e => setAnalystId(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-600 
-            text-white rounded-md px-3 py-2 text-sm 
-            focus:outline-none focus:border-blue-500">
+          className={selectClass}>
           <option value="">— Select analyst —</option>
           {analysts.map(a => (
             <option key={a.id} value={a.id}>{a.name}</option>

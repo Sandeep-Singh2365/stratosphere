@@ -4,7 +4,7 @@ import FellowCard from '@/components/institute/FellowCard'
 export const dynamic = 'force-dynamic'
 
 export default async function FellowsPage() {
-  const analysts = await getAllAnalysts()
+  const analysts = await getAllAnalysts('institute')
   return (
     <div>
       <h1 className="text-3xl font-serif font-bold text-institute-text mb-3">

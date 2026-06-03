@@ -25,6 +25,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
+  // Enforce strict role gating for the admin area.
+  // If role is missing or not admin, treat as unauthorized.
+  const role = (token as any)?.role
+  if (role !== 'admin') {
+    const loginUrl = new URL('/admin/login', request.url)
+    loginUrl.searchParams.set('error', 'unauthorized')
+    return NextResponse.redirect(loginUrl)
+  }
+
   return NextResponse.next()
 }
 

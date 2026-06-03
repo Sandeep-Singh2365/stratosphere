@@ -1,11 +1,13 @@
-import { loadEnvConfig } from '@next/env';
-loadEnvConfig(process.cwd());
-
-import { sql } from './db';
-import bcrypt from 'bcryptjs';
+import { loadEnvConfig } from '@next/env'
+import { getDb } from './db'
+import bcrypt from 'bcryptjs'
 
 async function seed() {
   try {
+    // Load .env.local / .env.* before initializing the DB client
+    loadEnvConfig(process.cwd())
+    const sql = getDb()
+
     console.log("Starting database seeding...");
 
     // Read admin credentials from environment (falling back to defaults if not loaded)

@@ -12,7 +12,7 @@ export default async function WireAnalystPage({
   params: { slug: string } 
 }) {
   const [analyst, articles] = await Promise.all([
-    getAnalystBySlug(params.slug),
+    getAnalystBySlug(params.slug, 'wire'),
     getArticlesByAnalyst(params.slug),
   ])
   if (!analyst) notFound()

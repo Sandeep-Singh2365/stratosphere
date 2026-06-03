@@ -1,4 +1,4 @@
-import { getArticleBySlug, getArticlesByRegion } from '@/lib/queries'
+import { getArticleBySlugLocalized, getArticlesByRegion } from '@/lib/queries'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -11,11 +11,14 @@ import { ArticleWithMeta } from '@/types'
 export const dynamic = 'force-dynamic'
 
 export default async function ArticlePage({ 
-  params 
+  params,
+  searchParams,
 }: { 
-  params: { slug: string } 
+  params: { slug: string }
+  searchParams?: { lang?: string }
 }) {
-  const article = await getArticleBySlug(params.slug)
+  const lang = searchParams?.lang ?? 'en'
+  const article = await getArticleBySlugLocalized(params.slug, lang)
   if (!article) notFound()
 
   const htmlContent = await marked.parse(article.content || '')
